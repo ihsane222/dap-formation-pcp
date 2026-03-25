@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen 4 — Vie avec composante d'investissement | Fiche de révision + Mini simulateur</title>
+<style>
+:root {
+  --blue-dark:#1a2f5e; --blue:#2563eb; --blue-light:#dbeafe; --blue-mid:#eff6ff;
+  --purple:#7c3aed; --purple-light:#ede9fe; --purple-mid:#f5f3ff;
+  --green:#16a34a; --green-light:#dcfce7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --orange:#ea580c; --orange-light:#fff7ed;
+  --gray:#6b7280; --gray-light:#f8fafc;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.65;min-height:100vh;}
+
+.container{max-width:880px;margin:0 auto;padding:32px 24px 80px;}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:32px;}
+.header .back-link{display:inline-block;color:var(--purple);font-size:0.85rem;font-weight:600;text-decoration:none;margin-bottom:14px;}
+.header .back-link:hover{text-decoration:underline;}
+.header h1{font-size:1.7rem;font-weight:900;color:var(--blue-dark);margin-bottom:4px;}
+.header .badge{display:inline-block;background:linear-gradient(135deg,var(--purple),#a78bfa);color:white;font-size:0.72rem;font-weight:800;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
+.header p{color:var(--gray);font-size:0.92rem;}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:28px;background:white;border-radius:14px;padding:6px;box-shadow:var(--shadow);}
+.tab{flex:1;padding:14px 20px;border:none;border-radius:10px;background:transparent;font-size:0.92rem;font-weight:700;color:var(--gray);cursor:pointer;transition:all 0.2s;text-align:center;}
+.tab.active{background:linear-gradient(135deg,var(--blue-dark),var(--purple));color:white;box-shadow:0 4px 12px rgba(124,58,237,0.3);}
+.tab:hover:not(.active){background:#f1f5f9;color:var(--blue-dark);}
+
+/* REVISION SECTION */
+.revision-section{display:block;}
+.revision-section.hidden{display:none;}
+
+.theme-group{margin-bottom:28px;}
+.theme-title{display:flex;align-items:center;gap:10px;font-size:1.1rem;font-weight:800;color:var(--blue-dark);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--purple-light);}
+.theme-title .theme-icon{font-size:1.3rem;}
+
+.card{background:white;border-radius:14px;padding:24px;box-shadow:var(--shadow);margin-bottom:14px;border-left:4px solid var(--purple);}
+.card h3{font-size:0.95rem;font-weight:800;color:var(--purple);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.card h3 .num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--purple);color:white;border-radius:50%;font-size:0.7rem;flex-shrink:0;}
+.card p, .card li{font-size:0.88rem;color:#334155;line-height:1.7;}
+.card ul{margin:8px 0 0 20px;}
+.card li{margin-bottom:4px;}
+
+.highlight{background:var(--purple-light);padding:2px 8px;border-radius:6px;font-weight:700;color:#5b21b6;font-size:0.85rem;}
+.highlight-green{background:var(--green-light);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--green);font-size:0.85rem;}
+.highlight-red{background:var(--red-light);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--red);font-size:0.85rem;}
+.highlight-blue{background:var(--blue-light);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--blue);font-size:0.85rem;}
+.highlight-orange{background:var(--orange-light);padding:2px 8px;border-radius:6px;font-weight:700;color:var(--orange);font-size:0.85rem;}
+
+.compare-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.83rem;}
+.compare-table th{background:var(--blue-dark);color:white;padding:10px 12px;text-align:left;font-weight:700;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.04em;}
+.compare-table td{padding:10px 12px;border-bottom:1px solid #e2e8f0;}
+.compare-table tr:nth-child(even){background:#f8fafc;}
+.compare-table .yes{color:var(--green);font-weight:700;}
+.compare-table .no{color:var(--red);font-weight:700;}
+
+.memo-box{background:linear-gradient(135deg,#fdf4ff,#ede9fe);border:2px solid var(--purple);border-radius:12px;padding:16px;margin-top:12px;font-size:0.85rem;}
+.memo-box strong{color:#5b21b6;}
+
+/* SIMULATOR */
+.simulator-section{display:none;}
+.simulator-section.visible{display:block;}
+
+.sim-intro{background:white;border-radius:14px;padding:28px;box-shadow:var(--shadow);text-align:center;margin-bottom:24px;}
+.sim-intro h2{font-size:1.2rem;font-weight:800;color:var(--blue-dark);margin-bottom:8px;}
+.sim-intro p{color:var(--gray);font-size:0.9rem;margin-bottom:18px;}
+
+.btn{display:inline-block;padding:14px 32px;border:none;border-radius:12px;font-size:0.95rem;font-weight:800;cursor:pointer;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--blue-dark),var(--purple));color:white;box-shadow:0 6px 16px rgba(124,58,237,0.3);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(124,58,237,0.4);}
+.btn-outline{background:white;color:var(--purple);border:2px solid var(--purple);}
+.btn-outline:hover{background:var(--purple-light);}
+
+.progress-bar{width:100%;height:10px;background:#e2e8f0;border-radius:5px;margin-bottom:20px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(135deg,var(--purple),#a78bfa);border-radius:5px;transition:width 0.4s ease;}
+
+.q-counter{font-size:0.82rem;font-weight:700;color:var(--gray);margin-bottom:6px;}
+
+.question-card{background:white;border-radius:14px;padding:28px;box-shadow:var(--shadow);margin-bottom:20px;}
+.q-text{font-size:1.05rem;font-weight:700;color:var(--blue-dark);margin-bottom:20px;line-height:1.55;}
+
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;transition:all 0.15s;background:white;}
+.option:hover:not(.locked){border-color:var(--purple);background:var(--purple-mid);}
+.option.selected{border-color:var(--purple);background:var(--purple-mid);}
+.option.correct{border-color:var(--green);background:var(--green-light);cursor:default;}
+.option.wrong{border-color:var(--red);background:var(--red-light);cursor:default;}
+.option.missed{border-color:var(--green);background:var(--green-light);opacity:0.6;cursor:default;}
+.opt-letter{width:30px;height:30px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:800;color:var(--gray);flex-shrink:0;transition:all 0.15s;}
+.option.selected .opt-letter{background:var(--purple);color:white;}
+.option.correct .opt-letter{background:var(--green);color:white;}
+.option.wrong .opt-letter{background:var(--red);color:white;}
+.opt-text{font-size:0.9rem;color:#334155;padding-top:3px;}
+
+.explanation{margin-top:16px;padding:14px;border-radius:10px;background:#fdf4ff;border-left:4px solid var(--purple);font-size:0.87rem;color:#4c1d95;display:none;}
+.explanation.visible{display:block;}
+
+.nav-buttons{display:flex;gap:12px;margin-top:16px;}
+.nav-buttons .btn{flex:1;text-align:center;}
+
+/* RESULTS */
+.results-card{background:white;border-radius:16px;padding:32px;box-shadow:var(--shadow-lg);text-align:center;display:none;}
+.results-card.visible{display:block;}
+.result-score{font-size:3.2rem;font-weight:900;margin:16px 0 8px;}
+.result-score.pass{color:var(--green);}
+.result-score.fail{color:var(--red);}
+.result-label{font-size:1.1rem;font-weight:700;margin-bottom:4px;}
+.result-sub{color:var(--gray);font-size:0.9rem;margin-bottom:20px;}
+.result-details{display:flex;justify-content:center;gap:28px;margin-bottom:24px;}
+.result-detail{text-align:center;}
+.result-detail .rd-num{font-size:1.4rem;font-weight:900;}
+.result-detail .rd-label{font-size:0.78rem;color:var(--gray);font-weight:600;}
+
+/* PRINT — format fiches de révision */
+@media print {
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
+  body{background:#fff;font-size:9.5pt;line-height:1.45;color:#000;}
+  .container{padding:0 8px;max-width:100%;}
+  .tabs, .simulator-section, .header .back-link, .header .badge{display:none!important;}
+  .revision-section{display:block!important;columns:2;column-gap:16px;}
+  .header{padding:12px 16px;background:#1a2f5e !important;color:#fff !important;margin-bottom:8px;}
+  .header h1{font-size:14pt;margin-bottom:2px;}
+  .header p{font-size:8pt;color:#ccc !important;}
+  .card{box-shadow:none;border:1px solid #ccc;margin-bottom:8px;padding:8px 10px;break-inside:avoid;border-radius:6px;font-size:9pt;}
+  .card h3{font-size:10pt;margin-bottom:4px;border-bottom:1px solid #ddd;padding-bottom:3px;}
+  .card ul,.card ol{margin:4px 0 4px 14px;}
+  .card li{margin-bottom:2px;}
+  .card p{margin-bottom:4px;}
+  .theme-group{break-inside:avoid;}
+  .theme-group h2{font-size:11pt;margin:10px 0 6px;padding:4px 8px;background:#f0f0f0 !important;border-left:4px solid #7c3aed;break-after:avoid;}
+  .compare-table{font-size:8.5pt;margin-bottom:6px;break-inside:avoid;}
+  .compare-table th{background:#e8e8e8 !important;padding:4px 6px;font-size:8pt;color:#000 !important;}
+  .compare-table td{padding:4px 6px;border-bottom:1px solid #eee;}
+  table{font-size:8.5pt;}
+  th{background:#e8e8e8 !important;padding:4px 6px;font-size:8pt;}
+  td{padding:4px 6px;}
+  @page{margin:10mm;size:A4;}
+}
+
+/* MOBILE */
+@media(max-width:640px){
+  .container{padding:20px 16px 60px;}
+  .header h1{font-size:1.3rem;}
+  .tabs{flex-direction:column;gap:4px;}
+  .card{padding:18px;}
+  .question-card{padding:20px;}
+  .compare-table{font-size:0.75rem;}
+  .compare-table th, .compare-table td{padding:8px 6px;}
+  .result-details{flex-direction:column;gap:12px;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- HEADER -->
+  <div class="header">
+    <a class="back-link" href="index.html">&larr; Retour au sommaire PCP</a>
+    <div class="badge">Certassur — Formation PCP</div>
+    <h1>Examen 4 — Vie avec composante d'investissement</h1>
+    <p>Fiche de revision + Mini simulateur &middot; 14 competences &middot; 15 QCM</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('revision')">&#128214; Fiche de revision</button>
+    <button class="tab" onclick="switchTab('simulator')">&#128203; Mini simulateur</button>
+  </div>
+
+  <!-- ============================= -->
+  <!-- PART 1 : FICHE DE REVISION    -->
+  <!-- ============================= -->
+  <div id="revision" class="revision-section">
+
+    <!-- THEME A : Produits d'investissement bases sur l'assurance -->
+    <div class="theme-group">
+      <div class="theme-title"><span class="theme-icon">&#128176;</span> Produits d'investissement bases sur l'assurance</div>
+
+      <!-- 1 -->
+      <div class="card">
+        <h3><span class="num">1</span> Fiscalite hors 3 piliers</h3>
+        <ul>
+          <li><span class="highlight">Taxe de 2%</span> sur les primes vie (taxe d'assurance federale)</li>
+          <li><strong>Precompte mobilier</strong> si contrat &lt; <span class="highlight-red">8 ans et 1 jour</span> ou si la couverture deces n'atteint pas 130% de la reserve</li>
+          <li>En <span class="highlight-blue">Branche 23</span> : <strong>pas de precompte mobilier</strong> sauf si la composante en taux fixe (obligataire) depasse 10%</li>
+        </ul>
+        <div class="memo-box">
+          <strong>Astuce examen :</strong> Retenir la regle "8+1+130" &mdash; 8 ans, 1 jour minimum, 130% couverture deces pour eviter le precompte mobilier.
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="card">
+        <h3><span class="num">2</span> Prime nette vs prime brute</h3>
+        <p><strong>Prime nette = prime brute &minus; taxes &minus; frais</strong></p>
+        <ul>
+          <li>C'est la <span class="highlight">prime nette</span> qui sert de base de calcul</li>
+          <li><strong>B21/B26</strong> : la garantie de capital porte sur la prime nette investie</li>
+          <li><strong>B23</strong> : les estimations/projections portent sur la prime nette</li>
+          <li>Le client paie la prime brute mais seule la prime nette "travaille"</li>
+        </ul>
+      </div>
+
+      <!-- 3 -->
+      <div class="card">
+        <h3><span class="num">3</span> Structure des frais</h3>
+        <table class="compare-table">
+          <tr><th>Type de frais</th><th>Base de calcul</th><th>Quand ?</th></tr>
+          <tr><td><strong>Frais d'entree</strong></td><td>% de la prime</td><td>A chaque versement</td></tr>
+          <tr><td><strong>Frais de gestion annuels</strong></td><td>% de la reserve / fonds</td><td>En continu (annuel)</td></tr>
+          <tr><td><strong>Frais de sortie</strong></td><td>% de la reserve rachetee</td><td>Rachat anticipe</td></tr>
+          <tr><td><strong>Frais de switching</strong></td><td>Montant fixe ou %</td><td>Changement de fonds (B23)</td></tr>
+        </table>
+        <div class="memo-box">
+          <strong>Attention :</strong> Les frais de switching sont specifiques a la <span class="highlight-blue">Branche 23</span> (arbitrage entre fonds).
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="card">
+        <h3><span class="num">4</span> Spot Rate (B21 Universal Life)</h3>
+        <ul>
+          <li>Taux garanti fixe <span class="highlight">au moment exact du versement</span></li>
+          <li>Chaque versement peut avoir un <strong>taux different</strong></li>
+          <li>Le taux est garanti pour <strong>toute la duree</strong> du contrat</li>
+          <li>S'applique en <span class="highlight-blue">B21 Universal Life</span></li>
+        </ul>
+        <div class="memo-box">
+          <strong>Exemple :</strong> Versement janvier &rarr; taux 1,50%. Versement juin &rarr; taux 1,25%. Les deux taux coexistent dans le meme contrat.
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="card">
+        <h3><span class="num">5</span> Transfert de reserves</h3>
+        <ul>
+          <li>Transfert <strong>possible</strong> d'un assureur a un autre</li>
+          <li><span class="highlight-red">Precompte mobilier</span> si les conditions d'exoneration ne sont pas remplies (regle 8+1+130)</li>
+          <li><span class="highlight-green">Pas de taxe</span> de 2% si meme structure fiscale</li>
+          <li>Verifier la coherence du regime fiscal avant/apres transfert</li>
+        </ul>
+      </div>
+
+      <!-- 6 -->
+      <div class="card">
+        <h3><span class="num">6</span> KID / DIC (Document d'Informations Cles)</h3>
+        <p><strong>Obligatoire pour les produits PRIIPS</strong> : Branche 23, Branche 44</p>
+        <ul>
+          <li>Nature du produit et objectifs</li>
+          <li>Risques et rendements (<span class="highlight">4 scenarios</span> : defavorable, moderee, favorable, stress)</li>
+          <li>Couts totaux (indicateur synthetique des couts)</li>
+          <li>Duree de detention recommandee</li>
+          <li>Procedure de plainte</li>
+        </ul>
+        <div class="memo-box">
+          <strong>Obligation legale :</strong> Le KID doit etre <span class="highlight-red">explique et interprete</span> precontractuellement &mdash; pas simplement remis au client !
+        </div>
+      </div>
+    </div>
+
+    <!-- THEME B : Options d'investissement -->
+    <div class="theme-group">
+      <div class="theme-title"><span class="theme-icon">&#9881;&#65039;</span> Options d'investissement</div>
+
+      <!-- 7 -->
+      <div class="card">
+        <h3><span class="num">7</span> Gestion globale vs gestion cantonnee/separee</h3>
+        <table class="compare-table">
+          <tr><th></th><th>Gestion globale</th><th>Gestion cantonnee/separee</th></tr>
+          <tr><td><strong>Principe</strong></td><td>Fonds general de l'assureur</td><td>Fonds distinct, separe du bilan</td></tr>
+          <tr><td><strong>Rendement</strong></td><td>Depend du resultat global</td><td>Rendement propre au fonds</td></tr>
+          <tr><td><strong>Participation beneficiaire</strong></td><td>Mutualisee, lissee</td><td>Directement liee a la performance du fonds</td></tr>
+          <tr><td><strong>Risque</strong></td><td>Plus stable, mutualise</td><td>Plus volatil mais potentiel plus eleve</td></tr>
+        </table>
+      </div>
+
+      <!-- 8 -->
+      <div class="card">
+        <h3><span class="num">8</span> Produits financiers vs assurances vie</h3>
+        <table class="compare-table">
+          <tr><th>Produit</th><th>Nature</th><th>Equivalent assurance</th></tr>
+          <tr><td><strong>Actions</strong></td><td>Propriete, pas d'echeance</td><td>B23 (fonds d'actions)</td></tr>
+          <tr><td><strong>Obligations</strong></td><td>Creance, coupon fixe, echeance</td><td>B21 (taux garanti)</td></tr>
+          <tr><td><strong>Fonds bancaires (OPC)</strong></td><td>Portefeuille collectif diversifie</td><td>B23 (fonds internes/externes)</td></tr>
+          <tr><td><strong>Compte epargne</strong></td><td>Capital garanti, interet variable</td><td>B21/B26 (garantie capital)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- THEME C : Risques financiers -->
+    <div class="theme-group">
+      <div class="theme-title"><span class="theme-icon">&#9888;&#65039;</span> Risques financiers</div>
+
+      <!-- 9 -->
+      <div class="card">
+        <h3><span class="num">9</span> Repartition des risques par branche</h3>
+        <table class="compare-table">
+          <tr><th></th><th>B21</th><th>B23</th><th>B26</th></tr>
+          <tr><td><strong>Qui porte le risque ?</strong></td><td class="yes">Assureur</td><td class="no">Preneur</td><td class="yes">Assureur</td></tr>
+          <tr><td><strong>Garantie Etat (100.000&euro;)</strong></td><td class="yes">OUI</td><td class="no">NON</td><td class="yes">OUI</td></tr>
+          <tr><td><strong>Capital garanti ?</strong></td><td class="yes">OUI</td><td class="no">NON</td><td class="yes">OUI</td></tr>
+          <tr><td><strong>Rendement</strong></td><td>Taux garanti + PB</td><td>Depend des fonds</td><td>Taux garanti + PB</td></tr>
+        </table>
+        <div class="memo-box">
+          <strong>Point critique :</strong> En <span class="highlight-red">B23 le preneur porte 100% du risque</span> et il n'y a <strong>aucune</strong> garantie du Fonds de protection des depots.
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <div class="card">
+        <h3><span class="num">10</span> Obligation d'explication du KID</h3>
+        <ul>
+          <li>Le KID/DIC <strong>ne peut pas etre simplement remis</strong> au client</li>
+          <li>L'intermediaire doit <span class="highlight">expliquer et interpreter</span> le document</li>
+          <li>Cela fait partie du <strong>devoir de conseil precontractuel</strong></li>
+          <li>L'intermediaire doit s'assurer que le client comprend les risques, couts et scenarios</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- THEME D : Contrats vie vs autres produits d'epargne -->
+    <div class="theme-group">
+      <div class="theme-title"><span class="theme-icon">&#128200;</span> Contrats vie vs autres produits d'epargne</div>
+
+      <!-- 11 -->
+      <div class="card">
+        <h3><span class="num">11</span> Types de fonds d'investissement</h3>
+        <table class="compare-table">
+          <tr><th>Type</th><th>Caracteristiques</th></tr>
+          <tr><td><strong>Fonds mixtes</strong></td><td>Combinaison actions + obligations. Diversification du risque. Equilibre rendement/securite.</td></tr>
+          <tr><td><strong>Fonds ouverts</strong></td><td>Entree et sortie libres. Nombre illimite de parts. Liquidite elevee.</td></tr>
+          <tr><td><strong>Fonds fermes</strong></td><td>Nombre fixe de parts. Souscription limitee dans le temps. Moins liquide.</td></tr>
+        </table>
+      </div>
+
+      <!-- 12 -->
+      <div class="card">
+        <h3><span class="num">12</span> Obligations</h3>
+        <ul>
+          <li><strong>Nature :</strong> titre de <span class="highlight-blue">creance</span> (= pret a l'emetteur)</li>
+          <li><strong>Coupon :</strong> interet fixe, verse periodiquement</li>
+          <li><strong>Echeance :</strong> date de remboursement a 100% de la valeur nominale</li>
+          <li><strong>Bon de caisse</strong> : emis par une <em>banque</em> &nbsp;|&nbsp; <strong>Bon d'Etat</strong> : emis par l'<em>Etat</em></li>
+          <li><strong>Rating :</strong> AAA (meilleur) &rarr; D (defaut)</li>
+          <li><strong>Prix d'emission :</strong> au pair (100%), en-dessous du pair (&lt;100%), au-dessus du pair (&gt;100%)</li>
+        </ul>
+        <p style="margin-top:10px;"><strong>Risques :</strong> insolvabilite, liquidite, change, taux, coupon, capital</p>
+        <div class="memo-box">
+          <strong>Fiscalite :</strong> Les interets (coupons) sont soumis au <span class="highlight-red">precompte mobilier</span>. Remboursement = 100% valeur nominale.
+        </div>
+      </div>
+
+      <!-- 13 -->
+      <div class="card">
+        <h3><span class="num">13</span> Actions</h3>
+        <ul>
+          <li><strong>Nature :</strong> part de <span class="highlight">propriete</span> dans une societe</li>
+          <li><span class="highlight-red">Pas d'echeance</span>, pas de revenus fixes, pas de valeur fixe</li>
+          <li><strong>Categories :</strong> avec/sans droit de vote, privilegiees, cotees/non cotees</li>
+          <li><strong>Risques :</strong> liquidite, change, dividende, capital, marche</li>
+          <li><strong>Dividendes</strong> soumis au precompte mobilier (exoneration partielle possible)</li>
+        </ul>
+        <div class="memo-box">
+          <strong>Point cle :</strong> La <span class="highlight-green">plus-value en gestion privee normale = NON taxee</span> en Belgique (bonne gestion d'un bon pere de famille).
+        </div>
+      </div>
+
+      <!-- 14 -->
+      <div class="card">
+        <h3><span class="num">14</span> OPC (Organisme de Placement Collectif)</h3>
+        <table class="compare-table">
+          <tr><th>Critere</th><th>Detail</th></tr>
+          <tr><td><strong>Forme juridique</strong></td><td>Contractuel (FCP) vs Statutaire (SICAV/SICAF)</td></tr>
+          <tr><td><strong>Politique</strong></td><td>Monetaire, obligataire, actions, mixte</td></tr>
+          <tr><td><strong>Distribution</strong></td><td>Distribue les revenus. Plus-value <span class="yes">exoneree</span> de PM.</td></tr>
+          <tr><td><strong>Capitalisation</strong></td><td>Reinvestit les revenus. Plus-value <span class="no">soumise au PM</span> si &gt;10% taux fixe.</td></tr>
+          <tr><td><strong>Risques</strong></td><td>Insolvabilite, liquidite, change, taux, capital</td></tr>
+        </table>
+        <div class="memo-box">
+          <strong>Distribution vs Capitalisation :</strong> En <em>distribution</em>, la plus-value est exoneree de PM. En <em>capitalisation</em>, elle est taxee si le fonds contient &gt;10% de produits a taux fixe (TIS &mdash; Taxable Income per Share).
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUME COMPARATIF GLOBAL -->
+    <div class="theme-group">
+      <div class="theme-title"><span class="theme-icon">&#128209;</span> Resume comparatif : B21 vs B23 vs B26</div>
+      <div class="card" style="border-left-color:var(--blue-dark);">
+        <table class="compare-table">
+          <tr><th>Critere</th><th>B21</th><th>B23</th><th>B26</th></tr>
+          <tr><td>Type</td><td>Taux garanti</td><td>Fonds d'investissement</td><td>Capitalisation</td></tr>
+          <tr><td>Risque porte par</td><td class="yes">Assureur</td><td class="no">Preneur</td><td class="yes">Assureur</td></tr>
+          <tr><td>Garantie Etat</td><td class="yes">Oui (100k&euro;)</td><td class="no">Non</td><td class="yes">Oui (100k&euro;)</td></tr>
+          <tr><td>Rendement</td><td>Garanti + PB</td><td>Variable (fonds)</td><td>Garanti + PB</td></tr>
+          <tr><td>Taxe prime</td><td>2%</td><td>2%</td><td>2%</td></tr>
+          <tr><td>PM rachat &lt;8a1j</td><td class="no">Oui (30%)</td><td>Seulement si &gt;10% fixe</td><td class="no">Oui (30%)</td></tr>
+          <tr><td>KID/DIC</td><td>Non</td><td class="no">Oui (PRIIPS)</td><td>Non</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================= -->
+  <!-- PART 2 : MINI SIMULATEUR      -->
+  <!-- ============================= -->
+  <div id="simulator" class="simulator-section">
+
+    <!-- INTRO -->
+    <div id="sim-intro" class="sim-intro">
+      <h2>Mini simulateur &mdash; 15 questions</h2>
+      <p>Testez vos connaissances sur les 14 competences de l'examen 4.<br>Seuil de reussite : <strong>60% (9/15)</strong></p>
+      <button class="btn btn-primary" onclick="startQuiz()">Commencer le quiz</button>
+    </div>
+
+    <!-- QUIZ AREA -->
+    <div id="quiz-area" style="display:none;">
+      <div class="q-counter" id="q-counter">Question 1 / 15</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:6.67%"></div></div>
+
+      <div class="question-card" id="question-card">
+        <div class="q-text" id="q-text"></div>
+        <div class="options" id="options-container"></div>
+        <div class="explanation" id="explanation"></div>
+      </div>
+
+      <div class="nav-buttons" id="nav-buttons">
+        <button class="btn btn-outline" id="btn-prev" onclick="prevQuestion()" style="display:none;">&larr; Precedente</button>
+        <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()">Valider</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-card" id="results-card">
+      <div style="font-size:2.5rem;">&#127891;</div>
+      <div class="result-label" id="result-label"></div>
+      <div class="result-score" id="result-score"></div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="result-details">
+        <div class="result-detail"><div class="rd-num" id="rd-correct" style="color:var(--green);">0</div><div class="rd-label">Correctes</div></div>
+        <div class="result-detail"><div class="rd-num" id="rd-wrong" style="color:var(--red);">0</div><div class="rd-label">Incorrectes</div></div>
+        <div class="result-detail"><div class="rd-num" id="rd-pct" style="color:var(--purple);">0%</div><div class="rd-label">Score</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="resetQuiz()">Recommencer</button>
+      <button class="btn btn-outline" style="margin-left:8px;" onclick="switchTab('revision')">Revoir la fiche</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// TAB SWITCHING
+function switchTab(tab) {
+  document.getElementById('revision').classList.toggle('hidden', tab !== 'revision');
+  document.getElementById('simulator').classList.toggle('visible', tab === 'simulator');
+  document.getElementById('simulator').style.display = tab === 'simulator' ? 'block' : 'none';
+  document.getElementById('revision').style.display = tab === 'revision' ? 'block' : 'none';
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'revision') || (i === 1 && tab === 'simulator'));
+  });
+}
+
+// QUESTIONS DATABASE
+const questions = [
+  {
+    q: "Quel est le montant de la taxe sur les primes d'assurance vie en Belgique (hors 3 piliers) ?",
+    opts: ["1%", "2%", "4,40%", "0% (exonere)"],
+    correct: 1,
+    expl: "La taxe d'assurance federale sur les primes vie est de 2%. Elle s'applique sur la prime brute."
+  },
+  {
+    q: "Dans quelles conditions le precompte mobilier est-il du lors du rachat d'un contrat B21 ?",
+    opts: [
+      "Toujours, quel que soit la duree",
+      "Si le contrat a moins de 8 ans et 1 jour OU si la couverture deces est inferieure a 130%",
+      "Uniquement si le contrat a moins de 5 ans",
+      "Jamais, les contrats B21 sont toujours exoneres"
+    ],
+    correct: 1,
+    expl: "Le precompte mobilier (30%) est du si le contrat dure moins de 8 ans et 1 jour, ou si la couverture deces n'atteint pas 130% de la reserve mathematique."
+  },
+  {
+    q: "Quelle est la difference entre la prime brute et la prime nette ?",
+    opts: [
+      "La prime nette = prime brute + taxes",
+      "La prime nette = prime brute - taxes - frais",
+      "Il n'y a aucune difference",
+      "La prime nette = prime brute - uniquement la taxe de 2%"
+    ],
+    correct: 1,
+    expl: "Prime nette = prime brute moins les taxes (2%) et les frais (entree). C'est la prime nette qui est effectivement investie et qui sert de base au calcul de la garantie (B21/B26) ou des estimations (B23)."
+  },
+  {
+    q: "Qu'est-ce que le Spot Rate en assurance B21 Universal Life ?",
+    opts: [
+      "Le taux variable applique chaque annee",
+      "Le taux garanti fixe au moment exact du versement, garanti pour toute la duree",
+      "Le taux minimum legal fixe par la FSMA",
+      "Le taux de rendement du fonds general de l'assureur"
+    ],
+    correct: 1,
+    expl: "Le Spot Rate est le taux garanti fixe au moment precis du versement. Chaque versement peut avoir un taux different, mais ce taux est garanti pour toute la duree du contrat."
+  },
+  {
+    q: "Quels sont les frais specifiques a la Branche 23 qui n'existent pas en B21 ?",
+    opts: [
+      "Frais d'entree",
+      "Frais de gestion annuels",
+      "Frais de switching (changement de fonds)",
+      "Frais de sortie"
+    ],
+    correct: 2,
+    expl: "Les frais de switching (arbitrage entre fonds) sont specifiques a la Branche 23. Ils s'appliquent lorsque le preneur decide de changer la repartition entre les fonds d'investissement."
+  },
+  {
+    q: "Le KID/DIC est obligatoire pour quels types de produits ?",
+    opts: [
+      "Tous les contrats d'assurance vie sans exception",
+      "Uniquement les contrats B21",
+      "Les produits PRIIPS : Branche 23 et Branche 44",
+      "Uniquement les contrats de plus de 10.000 euros"
+    ],
+    correct: 2,
+    expl: "Le KID (Key Information Document / Document d'Informations Cles) est obligatoire pour les produits PRIIPS (Packaged Retail and Insurance-based Investment Products), soit la B23 et la B44."
+  },
+  {
+    q: "En gestion cantonnee (separee), la participation beneficiaire depend de :",
+    opts: [
+      "La performance globale de l'assureur",
+      "La performance propre du fonds cantonne",
+      "La decision du conseil d'administration",
+      "Un pourcentage fixe defini dans le contrat"
+    ],
+    correct: 1,
+    expl: "En gestion cantonnee/separee, le rendement est directement lie a la performance du fonds distinct, contrairement a la gestion globale ou le resultat est mutualise."
+  },
+  {
+    q: "Qui porte le risque financier en Branche 23 ?",
+    opts: [
+      "L'assureur",
+      "L'Etat belge via le fonds de garantie",
+      "Le preneur d'assurance",
+      "Le gestionnaire de fonds"
+    ],
+    correct: 2,
+    expl: "En B23, le preneur porte 100% du risque financier. Il n'y a aucune garantie de capital et pas de protection par le Fonds de garantie (100.000 euros) contrairement aux B21 et B26."
+  },
+  {
+    q: "La garantie de l'Etat belge (Fonds de protection des depots) de 100.000 euros s'applique a :",
+    opts: [
+      "B21 et B23",
+      "B21 et B26 uniquement",
+      "B21, B23 et B26",
+      "Aucune branche d'assurance"
+    ],
+    correct: 1,
+    expl: "La garantie de l'Etat (100.000 euros par personne et par assureur) s'applique aux B21 et B26 car le risque est porte par l'assureur. La B23 est exclue car le risque est porte par le preneur."
+  },
+  {
+    q: "Quelle est la difference entre un fonds ouvert et un fonds ferme ?",
+    opts: [
+      "Le fonds ouvert investit en actions, le fonds ferme en obligations",
+      "Le fonds ouvert permet l'entree/sortie libre avec un nombre illimite de parts, le fonds ferme a un nombre fixe de parts",
+      "Il n'y a pas de difference significative",
+      "Le fonds ouvert est reserve aux institutionnels, le fonds ferme aux particuliers"
+    ],
+    correct: 1,
+    expl: "Un fonds ouvert (open-ended) permet l'entree et la sortie libre avec un nombre illimite de parts (grande liquidite). Un fonds ferme (closed-ended) a un nombre fixe de parts avec une souscription limitee dans le temps."
+  },
+  {
+    q: "Un bon de caisse est emis par :",
+    opts: [
+      "L'Etat belge",
+      "Une banque",
+      "Une entreprise privee quelconque",
+      "La Banque Nationale de Belgique"
+    ],
+    correct: 1,
+    expl: "Un bon de caisse est un titre de creance emis par une banque. Le bon d'Etat, lui, est emis par l'Etat belge. Les deux sont des obligations."
+  },
+  {
+    q: "En Belgique, la plus-value sur actions realisee par un particulier en gestion privee normale est :",
+    opts: [
+      "Taxee a 30% de precompte mobilier",
+      "Taxee a 15% de precompte mobilier",
+      "NON taxee (bonne gestion en bon pere de famille)",
+      "Taxee a 33% de taxe sur la speculation"
+    ],
+    correct: 2,
+    expl: "En Belgique, la plus-value realisee par un particulier dans le cadre d'une gestion normale de son patrimoine prive (bon pere de famille) n'est PAS taxee. Seuls les dividendes sont soumis au precompte mobilier."
+  },
+  {
+    q: "Dans un OPC de capitalisation, la plus-value est soumise au precompte mobilier si :",
+    opts: [
+      "Le fonds contient plus de 10% de produits a taux fixe",
+      "Le montant investi depasse 100.000 euros",
+      "L'investisseur detient les parts depuis moins de 5 ans",
+      "La plus-value depasse 1.000 euros"
+    ],
+    correct: 0,
+    expl: "Dans un OPC de capitalisation, la plus-value est soumise au precompte mobilier si le fonds contient plus de 10% de produits a taux fixe (regle TIS — Taxable Income per Share). En distribution, la plus-value est exoneree."
+  },
+  {
+    q: "Lors d'un transfert de reserves entre assureurs, la taxe de 2% sur les primes :",
+    opts: [
+      "Est toujours due a nouveau",
+      "N'est pas due si la structure fiscale reste identique",
+      "Est reduite a 1%",
+      "Est remboursee par l'ancien assureur"
+    ],
+    correct: 1,
+    expl: "Lors d'un transfert de reserves, la taxe de 2% n'est pas due a nouveau si la structure fiscale du contrat reste identique (meme regime). Par contre, le precompte mobilier peut etre du si les conditions d'exoneration ne sont pas remplies."
+  },
+  {
+    q: "L'intermediaire d'assurance doit, concernant le KID/DIC :",
+    opts: [
+      "Simplement le remettre au client avant la signature",
+      "Le remettre au client apres la signature du contrat",
+      "L'expliquer et l'interpreter precontractuellement au client",
+      "Le conserver dans ses dossiers sans obligation de remise"
+    ],
+    correct: 2,
+    expl: "L'intermediaire a l'obligation legale d'expliquer et d'interpreter le KID/DIC au client avant la conclusion du contrat (precontractuellement). Il ne suffit pas de le remettre : le devoir de conseil impose une explication active."
+  }
+];
+
+// QUIZ STATE
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+let validated = new Array(questions.length).fill(false);
+let score = 0;
+
+function startQuiz() {
+  document.getElementById('sim-intro').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('results-card').style.display = 'none';
+  currentQ = 0;
+  answers = new Array(questions.length).fill(null);
+  validated = new Array(questions.length).fill(false);
+  score = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('q-counter').textContent = `Question ${currentQ + 1} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = ((currentQ + 1) / questions.length * 100) + '%';
+  document.getElementById('q-text').textContent = q.q;
+
+  const container = document.getElementById('options-container');
+  const letters = ['A', 'B', 'C', 'D'];
+  container.innerHTML = '';
+
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    if (validated[currentQ]) div.classList.add('locked');
+    if (answers[currentQ] === i && !validated[currentQ]) div.classList.add('selected');
+    if (validated[currentQ]) {
+      if (i === q.correct) div.classList.add('correct');
+      else if (answers[currentQ] === i) div.classList.add('wrong');
+    }
+    div.innerHTML = `<div class="opt-letter">${letters[i]}</div><div class="opt-text">${opt}</div>`;
+    if (!validated[currentQ]) {
+      div.onclick = () => selectOption(i);
+    }
+    container.appendChild(div);
+  });
+
+  const expl = document.getElementById('explanation');
+  expl.textContent = q.expl;
+  expl.classList.toggle('visible', validated[currentQ]);
+
+  // Nav buttons
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  btnPrev.style.display = currentQ > 0 ? 'block' : 'none';
+
+  if (validated[currentQ]) {
+    if (currentQ < questions.length - 1) {
+      btnNext.textContent = 'Suivante \u2192';
+      btnNext.onclick = nextQuestion;
+    } else {
+      btnNext.textContent = 'Voir les resultats';
+      btnNext.onclick = showResults;
+    }
+  } else {
+    btnNext.textContent = 'Valider';
+    btnNext.onclick = validateAnswer;
+  }
+}
+
+function selectOption(i) {
+  if (validated[currentQ]) return;
+  answers[currentQ] = i;
+  renderQuestion();
+}
+
+function validateAnswer() {
+  if (answers[currentQ] === null) return;
+  validated[currentQ] = true;
+  if (answers[currentQ] === questions[currentQ].correct) score++;
+  renderQuestion();
+}
+
+function nextQuestion() {
+  if (!validated[currentQ]) {
+    validateAnswer();
+    return;
+  }
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const card = document.getElementById('results-card');
+  card.style.display = 'block';
+  card.classList.add('visible');
+
+  const pct = Math.round(score / questions.length * 100);
+  const pass = pct >= 60;
+
+  document.getElementById('result-label').textContent = pass ? 'Felicitations !' : 'Pas encore reussi...';
+  document.getElementById('result-score').textContent = `${score} / ${questions.length}`;
+  document.getElementById('result-score').className = 'result-score ' + (pass ? 'pass' : 'fail');
+  document.getElementById('result-sub').textContent = pass
+    ? `Vous avez atteint ${pct}% — seuil de reussite (60%) depasse !`
+    : `Vous avez obtenu ${pct}% — le seuil de reussite est de 60% (9/15). Revisez la fiche et recommencez !`;
+  document.getElementById('rd-correct').textContent = score;
+  document.getElementById('rd-wrong').textContent = questions.length - score;
+  document.getElementById('rd-pct').textContent = pct + '%';
+}
+
+function resetQuiz() {
+  document.getElementById('results-card').style.display = 'none';
+  document.getElementById('results-card').classList.remove('visible');
+  startQuiz();
+}
+</script>
+</body>
+</html>

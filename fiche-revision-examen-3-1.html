@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen 3.1 — Vie général partie 1 | Fiche de révision + Mini simulateur</title>
+<style>
+  :root {
+    --blue: #1a2f5e;
+    --blue-light: #2a4a8a;
+    --blue-pale: #e8edf5;
+    --green: #27ae60;
+    --green-bg: #eafaf1;
+    --red: #c0392b;
+    --red-bg: #fdedec;
+    --orange: #f39c12;
+    --orange-bg: #fef9e7;
+    --gray: #7f8c8d;
+    --gray-light: #ecf0f1;
+    --white: #ffffff;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f4f6fa;
+    color: #2c3e50;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: var(--white);
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+  header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.3rem; }
+  header p { font-size: 0.95rem; opacity: 0.85; }
+  header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: var(--white);
+    border-bottom: 2px solid var(--gray-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-btn {
+    padding: 1rem 2rem;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--blue); }
+  .tab-btn.active {
+    color: var(--blue);
+    border-bottom-color: var(--blue);
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Revision cards */
+  .theme-group { margin-bottom: 2rem; }
+  .theme-group h2 {
+    font-size: 1.15rem;
+    color: var(--blue);
+    border-left: 4px solid var(--blue);
+    padding-left: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--blue-light);
+    page-break-inside: avoid;
+  }
+  .card h3 {
+    font-size: 0.95rem;
+    color: var(--blue);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card h3 .num {
+    background: var(--blue);
+    color: var(--white);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+  .card p, .card li {
+    font-size: 0.9rem;
+    color: #444;
+  }
+  .card ul {
+    margin: 0.4rem 0 0.4rem 1.2rem;
+  }
+  .card li { margin-bottom: 0.2rem; }
+  .card .keyword {
+    display: inline-block;
+    background: var(--blue-pale);
+    color: var(--blue);
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0.15rem 0.15rem 0.15rem 0;
+  }
+  .card .important {
+    background: var(--orange-bg);
+    border-left: 3px solid var(--orange);
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.5rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.85rem;
+  }
+
+  /* Quiz */
+  .quiz-intro {
+    text-align: center;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+  }
+  .quiz-intro h2 { color: var(--blue); margin-bottom: 0.5rem; }
+  .quiz-intro p { color: var(--gray); margin-bottom: 1.5rem; }
+
+  .btn {
+    display: inline-block;
+    padding: 0.7rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--blue); color: var(--white); }
+  .btn-primary:hover { background: var(--blue-light); }
+  .btn-success { background: var(--green); color: var(--white); }
+  .btn-success:hover { opacity: 0.9; }
+
+  .progress-bar-container {
+    background: var(--gray-light);
+    border-radius: 10px;
+    height: 8px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--blue-light));
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+
+  .question-counter {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+  }
+
+  .question-card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  .question-card h3 {
+    font-size: 1.05rem;
+    color: var(--blue);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 0.6rem; }
+  .option-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.85rem 1rem;
+    border: 2px solid var(--gray-light);
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .option-btn:hover:not(.disabled) {
+    border-color: var(--blue);
+    background: var(--blue-pale);
+  }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--blue-pale);
+    font-weight: 600;
+  }
+  .option-btn.correct {
+    border-color: var(--green);
+    background: var(--green-bg);
+  }
+  .option-btn.wrong {
+    border-color: var(--red);
+    background: var(--red-bg);
+  }
+  .option-btn.disabled { cursor: default; }
+
+  .explanation {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation.correct-exp { background: var(--green-bg); border: 1px solid var(--green); }
+  .explanation.wrong-exp { background: var(--red-bg); border: 1px solid var(--red); }
+  .explanation strong { display: block; margin-bottom: 0.3rem; }
+
+  .quiz-actions {
+    margin-top: 1.25rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  .results {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .results .score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem auto;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .score-circle.pass { background: linear-gradient(135deg, var(--green), #2ecc71); }
+  .score-circle.fail { background: linear-gradient(135deg, var(--red), #e74c3c); }
+  .score-circle small { font-size: 0.7rem; font-weight: 400; }
+  .results h2 { margin-bottom: 0.5rem; color: var(--blue); }
+  .results p { color: var(--gray); margin-bottom: 1rem; }
+
+  /* Print — format fiches de révision */
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff; font-size: 9.5pt; line-height: 1.45; color: #000; }
+    header { padding: 12px 16px; background: #1a2f5e !important; color: #fff !important; border-bottom: none; margin-bottom: 8px; }
+    header h1 { font-size: 14pt; margin-bottom: 2px; }
+    header p { font-size: 8pt; color: #ccc !important; }
+    header .badge { display: none; }
+    .tabs, #quizSection, .no-print { display: none !important; }
+    #revisionSection { display: block !important; columns: 2; column-gap: 16px; }
+    .container { padding: 0 8px; max-width: 100%; }
+    .card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 8px; padding: 8px 10px; break-inside: avoid; border-radius: 6px; font-size: 9pt; }
+    .card h3 { font-size: 10pt; margin-bottom: 4px; border-bottom: 1px solid #ddd; padding-bottom: 3px; }
+    .card ul, .card ol { margin: 4px 0 4px 14px; }
+    .card li { margin-bottom: 2px; }
+    .card p { margin-bottom: 4px; }
+    .theme-group { break-inside: avoid; }
+    .theme-group h2 { font-size: 11pt; margin: 10px 0 6px; padding: 4px 8px; background: #f0f0f0 !important; border-left: 4px solid #1a2f5e; break-after: avoid; }
+    table { font-size: 8.5pt; margin-bottom: 6px; }
+    th { background: #e8e8e8 !important; padding: 4px 6px; font-size: 8pt; }
+    td { padding: 4px 6px; border-bottom: 1px solid #eee; }
+    @page { margin: 10mm; size: A4; }
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.25rem; }
+    .tab-btn { padding: 0.75rem 1rem; font-size: 0.9rem; }
+    .container { padding: 1rem; }
+    .card { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Examen 3.1 — Vie general partie 1</h1>
+  <p>Legislation applicable et competences financieres</p>
+  <span class="badge">Certassur — 16 competences | Fiche de revision + Mini simulateur</span>
+</header>
+
+<div class="tabs no-print">
+  <button class="tab-btn active" onclick="switchTab('revision')">Fiche de revision</button>
+  <button class="tab-btn" onclick="switchTab('quiz')">Mini simulateur</button>
+</div>
+
+<!-- ============================================ -->
+<!-- PART 1: FICHE DE REVISION                    -->
+<!-- ============================================ -->
+<div id="revisionSection" class="section active">
+<div class="container">
+
+  <div class="theme-group">
+    <h2>Connaissance de la legislation applicable aux contrats d'assurances vie</h2>
+
+    <div class="card">
+      <h3><span class="num">1</span> Definition de l'assurance vie (art. 160)</h3>
+      <p>Contrat par lequel l'assureur s'engage a verser une <strong>prestation</strong> en cas de <strong>vie</strong> ou de <strong>deces</strong> de l'assure, moyennant le paiement d'une prime.</p>
+      <p style="margin-top:0.4rem;"><strong>Trois grands types :</strong></p>
+      <ul>
+        <li><span class="keyword">Assurance vie</span> Prestation versee si l'assure est en vie a l'echeance</li>
+        <li><span class="keyword">Assurance deces</span> Prestation versee au deces de l'assure</li>
+        <li><span class="keyword">Assurance mixte</span> Combine vie + deces : prestation dans les deux cas</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">2</span> Droits et obligations des parties</h3>
+      <ul>
+        <li><span class="keyword">Preneur</span> Souscrit le contrat, paie la prime, peut modifier le beneficiaire, exercer le rachat</li>
+        <li><span class="keyword">Assure</span> Personne dont le risque (vie/deces) est couvert</li>
+        <li><span class="keyword">Beneficiaire acceptant</span> A accepte formellement &rarr; le preneur <strong>perd la liberte</strong> de modifier la clause beneficiaire</li>
+        <li><span class="keyword">Beneficiaire non acceptant</span> Le preneur reste <strong>libre</strong> de modifier la designation</li>
+        <li><span class="keyword">Conjoint</span> Droits specifiques (protection legale, consentement requis dans certains cas)</li>
+        <li><span class="keyword">Creanciers</span> Peuvent dans certaines conditions saisir la valeur de rachat</li>
+      </ul>
+      <div class="important">Retenir : l'acceptation du beneficiaire est un point-cle &mdash; elle verrouille le contrat en faveur du beneficiaire.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">3</span> Attribution beneficiaire et droit successoral</h3>
+      <ul>
+        <li><span class="keyword">Animus donandi</span> Si le preneur a une intention liberale, la prestation peut etre requalifiee en donation (rapport et reduction possibles)</li>
+        <li><span class="keyword">Droit propre</span> Le beneficiaire recoit en vertu du contrat, pas en tant qu'heritier</li>
+        <li><span class="keyword">En tant qu'heritier</span> Tombe dans la succession &rarr; soumis aux regles successorales</li>
+        <li><span class="keyword">Clause "mes heritiers legaux"</span> Depuis le 5/3/2014 : repartition selon la <strong>devolution successorale</strong> (et non par parts egales)</li>
+        <li><span class="keyword">Rapport et reduction</span> Protection de la part reservataire des heritiers reserves</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">4</span> Prestations securite sociale &mdash; incapacite</h3>
+      <ul>
+        <li><span class="keyword">Salaries</span> Salaire garanti 1 mois &rarr; mutuelle 60% du salaire &rarr; invalidite apres 1 an</li>
+        <li><span class="keyword">Independants</span> Forfait INASTI limite (montant fixe, pas lie au revenu)</li>
+        <li><span class="keyword">Fonctionnaires contractuels</span> Regime identique aux salaries</li>
+        <li><span class="keyword">Fonctionnaires statutaires</span> Regime specifique (traitement d'attente)</li>
+      </ul>
+      <div class="important">Les assurances complementaires (revenu garanti) compensent l'ecart entre les prestations legales et le revenu reel.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">5</span> Types d'assurances vie et branches</h3>
+      <ul>
+        <li><span class="keyword">Branche 21</span> Taux garanti + participation beneficiaire eventuelle &rarr; securite du capital</li>
+        <li><span class="keyword">Branche 23</span> Lies a des fonds d'investissement &rarr; <strong>pas de garantie</strong> de capital</li>
+        <li><span class="keyword">Branche 26</span> Capitalisation pure (pas de couverture deces, uniquement placement)</li>
+      </ul>
+      <p style="margin-top:0.5rem;"><strong>Branche 21 classique vs Universal Life :</strong></p>
+      <ul>
+        <li><span class="keyword">B21 classique</span> Prime fixe, capital garanti a l'echeance, taux garanti sur toute la duree</li>
+        <li><span class="keyword">B21 Universal Life</span> Prime flexible, Spot Rate (taux fixe au moment du versement), versements libres</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">6</span> Assurances complementaires incapacite / invalidite / accident</h3>
+      <ul>
+        <li><span class="keyword">Incapacite physiologique</span> Atteinte corporelle objective (ex: perte d'un membre &rarr; bareme)</li>
+        <li><span class="keyword">Incapacite economique</span> Perte de capacite de gain (impact sur le revenu professionnel)</li>
+        <li><span class="keyword">Temporaire vs Permanente</span> La temporaire est limitee dans le temps ; la permanente dure indefiniment</li>
+        <li><span class="keyword">Totale vs Partielle</span> Totale = 100% ; Partielle = pourcentage d'incapacite selon bareme</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">7</span> Exclusions legales</h3>
+      <ul>
+        <li><span class="keyword">Suicide</span> Exclu la <strong>1ere annee</strong> du contrat, sauf disposition contraire dans les conditions generales</li>
+        <li><span class="keyword">Acte intentionnel du beneficiaire</span> <strong>Toujours exclu</strong> (le beneficiaire qui cause volontairement le deces ne peut jamais toucher la prestation)</li>
+      </ul>
+      <div class="important">Le suicide apres la 1ere annee est en principe couvert &mdash; point frequemment teste a l'examen !</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">8</span> Elements de la prime vie</h3>
+      <ul>
+        <li><span class="keyword">Taux d'interet technique</span> Plus il est eleve, plus la prime est <strong>basse</strong> (rendement anticipe plus grand)</li>
+        <li><span class="keyword">Table de mortalite</span> Base statistique pour evaluer le risque deces/survie</li>
+        <li><span class="keyword">Frais et chargements</span> Couts preleves par l'assureur</li>
+        <li><span class="keyword">Prime periodique vs unique</span> Versements reguliers ou un seul versement</li>
+        <li><span class="keyword">Prime de risque vs prime nivelee</span> Risque = cout reel du risque a un age donne ; nivelee = lissee sur la duree</li>
+      </ul>
+      <p style="margin-top:0.5rem;"><strong>Frais d'entree vs frais de gestion :</strong></p>
+      <ul>
+        <li><span class="keyword">Frais d'entree</span> Preleves sur <strong>chaque prime</strong> &rarr; remunerent l'intermediaire</li>
+        <li><span class="keyword">Frais de gestion</span> Annuels, preleves sur la <strong>reserve</strong> mathematique</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="theme-group">
+    <h2>Fiscalite 3eme pilier</h2>
+
+    <div class="card">
+      <h3><span class="num">9</span> Epargne-pension et epargne a long terme</h3>
+      <p><strong>Epargne-pension (3eme pilier A) :</strong></p>
+      <ul>
+        <li>Reduction d'impot <strong>30%</strong> (bas plafond) ou <strong>25%</strong> (haut plafond)</li>
+        <li>Pas de taxe sur les primes</li>
+        <li>Taxe anticipative <strong>8%</strong> a 60 ans</li>
+      </ul>
+      <p style="margin-top:0.5rem;"><strong>Epargne a long terme (3eme pilier B) :</strong></p>
+      <ul>
+        <li>Reduction d'impot <strong>30%</strong></li>
+        <li>Taxe de <strong>2%</strong> sur les primes</li>
+        <li>Taxe anticipative <strong>10%</strong> a 60 ans</li>
+      </ul>
+      <div class="important">Retrait avant 60 ans = taxation a <strong>33%</strong> + additionnels communaux. Attestation fiscale obligatoire.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">10</span> Les 4 piliers de pension</h3>
+      <ul>
+        <li><span class="keyword">1er pilier</span> Pension legale (securite sociale)</li>
+        <li><span class="keyword">2eme pilier</span> Pension complementaire professionnelle (EIP, PLCI, assurance groupe)</li>
+        <li><span class="keyword">3eme pilier</span> Epargne individuelle avec avantage fiscal (epargne-pension, epargne a long terme)</li>
+        <li><span class="keyword">4eme pilier</span> Epargne libre, sans avantage fiscal</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">11</span> Pension legale</h3>
+      <ul>
+        <li><span class="keyword">Financement</span> Systeme de <strong>repartition</strong> (les actifs financent les retraites actuelles)</li>
+        <li><span class="keyword">Formule</span> Basee sur la <strong>carriere</strong> (nombre d'annees) x <strong>salaire</strong> (plafonne)</li>
+        <li>Les assurances vie servent a <strong>combler l'ecart</strong> entre la pension legale et le dernier revenu professionnel</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="theme-group">
+    <h2>Connaissances financieres</h2>
+
+    <div class="card">
+      <h3><span class="num">12</span> Reserve mathematique, rachat et reduction</h3>
+      <ul>
+        <li><span class="keyword">Reserve mathematique</span> Valeur actuelle du contrat a un instant T</li>
+        <li><span class="keyword">Rachat</span> Resiliation anticipee du contrat &rarr; on recupere la valeur de rachat</li>
+        <li><span class="keyword">Reduction</span> Arret du paiement des primes &rarr; le contrat continue avec des prestations <strong>reduites</strong></li>
+        <li><span class="keyword">Valeur de rachat theorique</span> = reserve mathematique</li>
+        <li><span class="keyword">Valeur de rachat pratique</span> = reserve mathematique <strong>moins</strong> frais de sortie</li>
+        <li><span class="keyword">Valeur de reduction</span> Capital/rente reduit(e) correspondant aux primes deja payees</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">13</span> Avance vs mise en gage</h3>
+      <ul>
+        <li><span class="keyword">Avance</span> Pret de l'assureur garanti par la reserve &rarr; le contrat <strong>continue</strong> normalement, interets a payer sur l'avance</li>
+        <li><span class="keyword">Mise en gage</span> Le contrat sert de <strong>garantie</strong> pour un pret externe (banque) &rarr; si defaut, le creancier peut reclamer le rachat</li>
+      </ul>
+      <div class="important">Difference-cle : l'avance vient de l'assureur, la mise en gage implique un creancier tiers.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">14</span> Participation beneficiaire (PB)</h3>
+      <ul>
+        <li><span class="keyword">PB en cas de vie</span> Ajoutee a la <strong>reserve mathematique</strong> &rarr; augmente la valeur du contrat</li>
+        <li><span class="keyword">PB en cas de deces</span> Ajoutee au <strong>capital deces</strong> &rarr; augmente la prestation versee aux beneficiaires</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">15</span> Sources de participation beneficiaire</h3>
+      <ul>
+        <li><span class="keyword">Benefice de mortalite</span> Ecart favorable entre la mortalite anticipee (table) et la mortalite reelle</li>
+        <li><span class="keyword">Benefice d'investissement</span> Rendement reel des placements superieur au taux technique garanti</li>
+        <li><span class="keyword">Benefice sur chargements</span> Frais reellement engages inferieurs aux chargements factures</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="num">16</span> Conditions d'attribution de la PB</h3>
+      <ul>
+        <li>L'assureur fixe des <span class="keyword">exigences minimales / seuils</span> pour declencher la distribution de PB</li>
+        <li><span class="keyword">Petit taux de PB</span> Attribution modeste quand les conditions de base sont remplies</li>
+        <li><span class="keyword">Grand taux de PB</span> Attribution plus genereuse quand les resultats depassent les seuils</li>
+        <li>Lien avec le <span class="keyword">taux garanti</span> : plus le taux garanti est eleve, moins la marge disponible pour la PB est importante</li>
+      </ul>
+      <div class="important">La PB n'est jamais garantie &mdash; elle depend des resultats reels de l'assureur.</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- PART 2: MINI SIMULATEUR                      -->
+<!-- ============================================ -->
+<div id="quizSection" class="section">
+<div class="container">
+
+  <div id="quizIntro" class="quiz-intro">
+    <h2>Mini simulateur d'examen</h2>
+    <p>15 questions a choix multiples couvrant les 16 competences de l'examen 3.1.<br>Seuil de reussite : 9/15 (60%)</p>
+    <button class="btn btn-primary" onclick="startQuiz()">Commencer le test</button>
+  </div>
+
+  <div id="quizArea" style="display:none;"></div>
+  <div id="quizResults" style="display:none;"></div>
+
+</div>
+</div>
+
+<script>
+// Tab switching
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  if (tab === 'revision') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('revisionSection').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('quizSection').classList.add('active');
+  }
+}
+
+// Questions bank
+const questions = [
+  {
+    q: "Selon l'article 160, quelle est la definition correcte de l'assurance vie ?",
+    opts: [
+      "Un contrat ou l'assureur garantit uniquement le remboursement des primes versees",
+      "Un contrat ou l'assureur s'engage a verser une prestation en cas de vie ou de deces de l'assure",
+      "Un contrat d'epargne sans composante de risque",
+      "Un contrat qui couvre uniquement le risque de deces accidentel"
+    ],
+    correct: 1,
+    explanation: "L'article 160 definit l'assurance vie comme un contrat ou l'assureur s'engage a verser une prestation liee a la vie ou au deces de l'assure. Cela couvre les assurances vie, deces et mixtes."
+  },
+  {
+    q: "Quelle est la consequence principale de l'acceptation du beneficiaire ?",
+    opts: [
+      "Le beneficiaire doit payer une partie des primes",
+      "Le contrat est automatiquement resilie",
+      "Le preneur perd la liberte de modifier la clause beneficiaire",
+      "Le taux garanti est augmente de 0,5%"
+    ],
+    correct: 2,
+    explanation: "Lorsque le beneficiaire accepte formellement sa designation, le preneur ne peut plus modifier la clause beneficiaire, racheter ou mettre en gage le contrat sans son accord. C'est un verrou juridique important."
+  },
+  {
+    q: "Depuis le 5 mars 2014, que signifie la clause 'mes heritiers legaux' dans un contrat d'assurance vie ?",
+    opts: [
+      "La prestation est repartie par parts egales entre tous les heritiers",
+      "La prestation est repartie selon les regles de la devolution successorale",
+      "La prestation revient integralement au conjoint survivant",
+      "La prestation est versee a l'Etat si aucun heritier ne se manifeste"
+    ],
+    correct: 1,
+    explanation: "Depuis le 5/3/2014, la clause 'mes heritiers legaux' implique une repartition selon la devolution successorale (et non par parts egales comme avant). Par exemple, le conjoint et les enfants recevront selon les regles du Code civil."
+  },
+  {
+    q: "Pour un salarie en incapacite de travail, quel est l'ordre des prestations ?",
+    opts: [
+      "Mutuelle 60% immediatement, puis invalidite apres 6 mois",
+      "Salaire garanti 1 mois, puis mutuelle 60%, puis invalidite apres 1 an",
+      "INASTI forfaitaire des le premier jour",
+      "Salaire garanti 3 mois, puis pension anticipee"
+    ],
+    correct: 1,
+    explanation: "Le salarie beneficie d'abord du salaire garanti pendant 1 mois (a charge de l'employeur), puis des indemnites de la mutuelle a 60% du salaire plafonne, et enfin du regime d'invalidite apres 1 an d'incapacite."
+  },
+  {
+    q: "Quelle est la principale difference entre la branche 21 et la branche 23 ?",
+    opts: [
+      "La branche 21 est reservee aux independants, la branche 23 aux salaries",
+      "La branche 21 offre un taux garanti, la branche 23 est liee a des fonds sans garantie de capital",
+      "La branche 23 offre un taux garanti superieur a la branche 21",
+      "La branche 21 ne peut pas distribuer de participation beneficiaire"
+    ],
+    correct: 1,
+    explanation: "La branche 21 garantit un taux d'interet minimum (securite du capital), tandis que la branche 23 est liee a des fonds d'investissement sans aucune garantie de capital. Le rendement de la B23 depend entierement de l'evolution des marches."
+  },
+  {
+    q: "Quelle est la difference entre une branche 21 classique et une branche 21 Universal Life ?",
+    opts: [
+      "La B21 classique est sans frais, la Universal Life a des frais de gestion",
+      "La B21 classique a un taux garanti sur toute la duree ; la Universal Life applique un Spot Rate a chaque versement",
+      "La Universal Life est exclusivement destinee au 2eme pilier",
+      "Il n'y a aucune difference, ce sont deux noms pour le meme produit"
+    ],
+    correct: 1,
+    explanation: "En B21 classique, le taux garanti s'applique sur toute la duree du contrat avec des primes fixes. En Universal Life, chaque versement (libre) beneficie du taux en vigueur au moment du versement (Spot Rate), ce qui offre plus de flexibilite."
+  },
+  {
+    q: "Le suicide de l'assure est-il couvert par l'assurance vie ?",
+    opts: [
+      "Jamais, c'est une exclusion absolue",
+      "Toujours, sans exception",
+      "Exclu la 1ere annee du contrat, sauf disposition contraire",
+      "Uniquement si le beneficiaire est le conjoint"
+    ],
+    correct: 2,
+    explanation: "Le suicide est exclu pendant la premiere annee du contrat, sauf si les conditions generales prevoient une couverture plus large. Apres la premiere annee, le suicide est en principe couvert. A ne pas confondre avec l'acte intentionnel du beneficiaire, qui est toujours exclu."
+  },
+  {
+    q: "Quel est l'effet d'un taux d'interet technique plus eleve sur la prime ?",
+    opts: [
+      "La prime augmente car l'assureur prend plus de risques",
+      "La prime diminue car le rendement anticipe est plus grand",
+      "La prime reste identique, seul le capital change",
+      "Le taux technique n'a aucun impact sur la prime"
+    ],
+    correct: 1,
+    explanation: "Un taux technique plus eleve signifie que l'assureur anticipe un meilleur rendement sur les reserves. Il a donc besoin de moins de primes pour atteindre le meme capital a l'echeance : la prime est donc plus basse."
+  },
+  {
+    q: "En epargne-pension (3eme pilier A), quelle est la taxe anticipative prelevee a 60 ans ?",
+    opts: [
+      "10%",
+      "33%",
+      "8%",
+      "2%"
+    ],
+    correct: 2,
+    explanation: "En epargne-pension, la taxe anticipative est de 8% et est prelevee a 60 ans. Apres cette taxation, les versements supplementaires entre 60 et 65 ans beneficient toujours de la reduction d'impot sans taxation supplementaire. A ne pas confondre avec l'epargne a long terme qui a une taxe anticipative de 10%."
+  },
+  {
+    q: "Que se passe-t-il en cas de retrait d'une epargne-pension avant 60 ans ?",
+    opts: [
+      "Aucune penalite, le capital est libre",
+      "Taxation a 33% plus additionnels communaux",
+      "Taxation a 8% anticipative",
+      "Remboursement des avantages fiscaux uniquement"
+    ],
+    correct: 1,
+    explanation: "Un retrait avant 60 ans est fortement penalise : taxation a 33% plus les additionnels communaux. C'est pourquoi il est deconseille de racheter une epargne-pension avant l'echeance fiscale."
+  },
+  {
+    q: "Quelle est la difference entre la valeur de rachat theorique et pratique ?",
+    opts: [
+      "Aucune, ce sont des synonymes",
+      "La theorique inclut la participation beneficiaire, la pratique non",
+      "La theorique egale la reserve mathematique ; la pratique egale la reserve moins les frais de sortie",
+      "La pratique est toujours superieure a la theorique"
+    ],
+    correct: 2,
+    explanation: "La valeur de rachat theorique correspond a la reserve mathematique (valeur brute du contrat). La valeur de rachat pratique est ce que le preneur recoit effectivement : la reserve mathematique diminuee des frais de sortie (penalites, frais administratifs)."
+  },
+  {
+    q: "Quelle est la difference entre une avance sur police et une mise en gage ?",
+    opts: [
+      "L'avance est gratuite, la mise en gage est payante",
+      "L'avance est un pret de l'assureur garanti par la reserve (contrat continue) ; la mise en gage utilise le contrat comme garantie d'un pret externe",
+      "La mise en gage est plus avantageuse fiscalement",
+      "Il n'y a pas de difference, les deux termes designent la meme operation"
+    ],
+    correct: 1,
+    explanation: "L'avance est accordee par l'assureur lui-meme, garantie par la reserve du contrat qui continue a produire ses effets. La mise en gage implique un creancier tiers (banque) qui prend le contrat en garantie d'un pret. En cas de defaut, le creancier peut exiger le rachat."
+  },
+  {
+    q: "D'ou provient la participation beneficiaire ?",
+    opts: [
+      "Uniquement du benefice d'investissement",
+      "Du benefice de mortalite, du benefice d'investissement et du benefice sur chargements",
+      "D'une dotation annuelle de l'Etat",
+      "Du benefice de mortalite uniquement"
+    ],
+    correct: 1,
+    explanation: "La PB a trois sources : (1) le benefice de mortalite (mortalite reelle meilleure que prevue), (2) le benefice d'investissement (rendement superieur au taux garanti), et (3) le benefice sur chargements (couts reels inferieurs aux frais factures)."
+  },
+  {
+    q: "Quel est le lien entre le taux garanti et la participation beneficiaire ?",
+    opts: [
+      "Plus le taux garanti est eleve, plus la PB est elevee",
+      "Plus le taux garanti est eleve, moins la marge disponible pour la PB est importante",
+      "Le taux garanti et la PB sont totalement independants",
+      "La PB remplace toujours le taux garanti"
+    ],
+    correct: 1,
+    explanation: "Le taux garanti represente le rendement minimum promis au preneur. Plus ce taux est eleve, plus l'assureur utilise ses rendements pour honorer cette garantie, et moins il reste de marge excedentaire a distribuer sous forme de participation beneficiaire."
+  },
+  {
+    q: "Quel pilier de pension correspond a l'epargne individuelle avec avantage fiscal ?",
+    opts: [
+      "1er pilier",
+      "2eme pilier",
+      "3eme pilier",
+      "4eme pilier"
+    ],
+    correct: 2,
+    explanation: "Le 3eme pilier est l'epargne individuelle avec avantage fiscal (epargne-pension et epargne a long terme). Le 1er pilier est la pension legale, le 2eme est la pension complementaire professionnelle, et le 4eme est l'epargne libre sans avantage fiscal."
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+let answered = false;
+let selectedOpt = -1;
+
+function startQuiz() {
+  currentQ = 0;
+  score = 0;
+  document.getElementById('quizIntro').style.display = 'none';
+  document.getElementById('quizResults').style.display = 'none';
+  document.getElementById('quizArea').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  selectedOpt = -1;
+  const q = questions[currentQ];
+  const pct = ((currentQ) / questions.length * 100).toFixed(0);
+
+  let html = `
+    <div class="progress-bar-container"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <div class="question-counter">Question ${currentQ + 1} sur ${questions.length}</div>
+    <div class="question-card">
+      <h3>${q.q}</h3>
+      <div class="options">
+  `;
+  q.opts.forEach((opt, i) => {
+    html += `<button class="option-btn" id="opt${i}" onclick="selectOption(${i})">${String.fromCharCode(65 + i)}. ${opt}</button>`;
+  });
+  html += `</div>
+    <div class="explanation" id="explanation"></div>
+    <div class="quiz-actions">
+      <button class="btn btn-primary" id="verifyBtn" onclick="verifyAnswer()" style="display:none;">Verifier</button>
+      <button class="btn btn-success" id="nextBtn" onclick="nextQuestion()" style="display:none;">${currentQ < questions.length - 1 ? 'Question suivante' : 'Voir les resultats'}</button>
+    </div>
+  </div>`;
+
+  document.getElementById('quizArea').innerHTML = html;
+}
+
+function selectOption(i) {
+  if (answered) return;
+  selectedOpt = i;
+  document.querySelectorAll('.option-btn').forEach((b, idx) => {
+    b.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('verifyBtn').style.display = 'inline-block';
+}
+
+function verifyAnswer() {
+  if (answered || selectedOpt < 0) return;
+  answered = true;
+  const q = questions[currentQ];
+  const isCorrect = selectedOpt === q.correct;
+  if (isCorrect) score++;
+
+  document.querySelectorAll('.option-btn').forEach((b, idx) => {
+    b.classList.add('disabled');
+    if (idx === q.correct) b.classList.add('correct');
+    if (idx === selectedOpt && !isCorrect) b.classList.add('wrong');
+  });
+
+  const exp = document.getElementById('explanation');
+  exp.className = `explanation show ${isCorrect ? 'correct-exp' : 'wrong-exp'}`;
+  exp.innerHTML = `<strong>${isCorrect ? 'Bonne reponse !' : 'Mauvaise reponse'}</strong>${q.explanation}`;
+
+  document.getElementById('verifyBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= questions.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  document.getElementById('quizArea').style.display = 'none';
+  const pass = score >= 9;
+  const pct = Math.round(score / questions.length * 100);
+
+  document.getElementById('quizResults').style.display = 'block';
+  document.getElementById('quizResults').innerHTML = `
+    <div class="results">
+      <h2>Resultats du test</h2>
+      <div class="score-circle ${pass ? 'pass' : 'fail'}">
+        ${score}/${questions.length}
+        <small>${pct}%</small>
+      </div>
+      <p style="font-size:1.1rem;font-weight:600;color:${pass ? 'var(--green)' : 'var(--red)'};">
+        ${pass ? 'Felicitations, vous avez reussi !' : 'Echec — revoyez la fiche de revision'}
+      </p>
+      <p>Seuil de reussite : 9/15 (60%)</p>
+      <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="startQuiz()">Recommencer le test</button>
+        <button class="btn btn-success" onclick="switchTab('revision')">Revoir la fiche</button>
+      </div>
+    </div>
+  `;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen 3.2 — Vie général partie 2 | Fiche de révision + Mini simulateur</title>
+<style>
+:root {
+  --blue-dark:#1a2f5e; --blue:#2563eb; --blue-light:#dbeafe; --blue-mid:#eff6ff;
+  --green:#16a34a; --green-light:#dcfce7;
+  --orange:#ea580c; --orange-light:#fff7ed;
+  --purple:#7c3aed; --purple-light:#ede9fe;
+  --red:#dc2626; --red-light:#fee2e2;
+  --yellow:#ca8a04; --yellow-light:#fefce8;
+  --gray:#6b7280; --gray-light:#f8fafc;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.65;}
+
+/* HEADER */
+.hero{background:linear-gradient(135deg,var(--blue-dark) 0%,#2d4a8e 50%,var(--orange) 150%);color:white;padding:48px 40px 40px;text-align:center;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);padding:6px 18px;border-radius:20px;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;}
+.hero h1{font-size:2rem;font-weight:900;margin-bottom:8px;}
+.hero p{font-size:1rem;opacity:0.75;max-width:600px;margin:0 auto;}
+
+/* NAV TABS */
+.tab-bar{display:flex;justify-content:center;gap:8px;padding:16px 20px;background:white;border-bottom:2px solid #e2e8f0;position:sticky;top:0;z-index:100;}
+.tab{padding:10px 24px;border-radius:10px;border:2px solid transparent;background:#f8fafc;cursor:pointer;font-size:0.92rem;font-weight:700;color:var(--gray);transition:all 0.2s;}
+.tab:hover{background:var(--orange-light);color:var(--orange);}
+.tab.active{background:var(--orange);color:white;border-color:var(--orange);}
+
+/* CONTENT */
+.content{max-width:960px;margin:0 auto;padding:32px 24px 80px;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* SECTION TITLES */
+.section-title{font-size:1.2rem;font-weight:800;color:var(--blue-dark);margin:36px 0 16px;padding-bottom:8px;border-bottom:3px solid var(--orange-light);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.section-title:first-child{margin-top:0;}
+.stag{font-size:0.7rem;background:var(--orange-light);color:var(--orange);padding:3px 10px;border-radius:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+h4{font-size:1rem;font-weight:700;color:#334155;margin:20px 0 10px;}
+p{margin-bottom:12px;font-size:0.95rem;}
+ul,ol{margin:0 0 14px 20px;font-size:0.95rem;}
+li{margin-bottom:5px;}
+strong{color:var(--blue-dark);}
+
+/* BOXES */
+.box{border-radius:12px;padding:18px 20px;margin-bottom:18px;}
+.box-def{background:var(--blue-mid);border-left:4px solid var(--blue);}
+.box-key{background:var(--yellow-light);border-left:4px solid var(--yellow);color:#713f12;}
+.box-warn{background:var(--red-light);border-left:4px solid var(--red);color:#7f1d1d;}
+.box-ok{background:var(--green-light);border-left:4px solid var(--green);color:#14532d;}
+.box-memo{background:#fdf4ff;border-left:4px solid var(--purple);color:#4c1d95;}
+.box-orange{background:var(--orange-light);border-left:4px solid var(--orange);color:#7c2d12;}
+.box .box-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+.box-def .box-label{color:var(--blue);}
+.box-key .box-label{color:var(--yellow);}
+.box-warn .box-label{color:var(--red);}
+.box-ok .box-label{color:var(--green);}
+.box-memo .box-label{color:var(--purple);}
+.box-orange .box-label{color:var(--orange);}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:0.88rem;background:white;border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
+th{background:#f1f5f9;font-weight:700;padding:10px 14px;text-align:left;color:#475569;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #e2e8f0;}
+td{padding:10px 14px;border-bottom:1px solid #f1f5f9;vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+
+/* TAGS */
+.tag-green{background:var(--green-light);color:var(--green);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+.tag-red{background:var(--red-light);color:var(--red);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+.tag-orange{background:var(--orange-light);color:var(--orange);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+.tag-blue{background:var(--blue-light);color:var(--blue);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+
+/* GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+
+/* COMPETENCY REF */
+.comp-ref{display:inline-block;font-size:0.68rem;font-weight:700;background:var(--orange-light);color:var(--orange);padding:2px 8px;border-radius:6px;margin-bottom:8px;}
+
+/* QUIZ */
+.quiz-intro{text-align:center;padding:40px 20px;}
+.quiz-intro h2{font-size:1.5rem;font-weight:900;color:var(--blue-dark);margin-bottom:12px;}
+.quiz-intro p{color:var(--gray);max-width:500px;margin:0 auto 24px;}
+.btn-start{display:inline-block;padding:14px 36px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--blue-dark),var(--orange));color:white;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(234,88,12,0.3);transition:all 0.2s;}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(234,88,12,0.4);}
+
+.quiz-progress{display:flex;align-items:center;justify-content:space-between;background:white;border-radius:14px;padding:16px 24px;box-shadow:var(--shadow);margin-bottom:24px;}
+.quiz-progress .qp-text{font-size:0.85rem;font-weight:700;color:var(--blue-dark);}
+.quiz-progress .qp-score{font-size:0.85rem;font-weight:700;color:var(--orange);}
+.progress-bar{flex:1;height:8px;background:#e2e8f0;border-radius:4px;margin:0 16px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--orange);border-radius:4px;transition:width 0.3s;}
+
+.question-card{background:white;border-radius:16px;padding:32px;box-shadow:var(--shadow);margin-bottom:24px;}
+.q-number{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--orange);margin-bottom:8px;}
+.q-text{font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:24px;line-height:1.5;}
+
+.options{display:flex;flex-direction:column;gap:12px;}
+.option{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:2px solid #e2e8f0;border-radius:12px;cursor:pointer;transition:all 0.15s;background:white;}
+.option:hover:not(.disabled){border-color:var(--orange);background:var(--orange-light);}
+.option.selected{border-color:var(--orange);background:var(--orange-light);}
+.option.correct{border-color:var(--green);background:var(--green-light);cursor:default;}
+.option.wrong{border-color:var(--red);background:var(--red-light);cursor:default;}
+.option.missed{border-color:var(--green);background:var(--green-light);opacity:0.6;cursor:default;}
+.option.disabled{cursor:default;opacity:0.7;}
+.opt-letter{width:32px;height:32px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:var(--gray);flex-shrink:0;transition:all 0.15s;}
+.option.selected .opt-letter{background:var(--orange);color:white;}
+.option.correct .opt-letter{background:var(--green);color:white;}
+.option.wrong .opt-letter{background:var(--red);color:white;}
+.opt-text{font-size:0.95rem;color:#334155;padding-top:4px;}
+
+.explanation{margin-top:18px;padding:16px;border-radius:12px;background:#fdf4ff;border-left:4px solid var(--purple);font-size:0.9rem;color:#4c1d95;display:none;}
+.explanation.visible{display:block;}
+
+.nav-buttons{display:flex;gap:12px;justify-content:space-between;}
+.btn-nav{padding:12px 28px;border:none;border-radius:12px;font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-validate{background:var(--orange);color:white;}
+.btn-validate:hover{background:#c2410c;}
+.btn-validate:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-next{background:var(--blue-dark);color:white;}
+.btn-next:hover{background:#15244a;}
+
+/* RESULTS */
+.results-card{background:white;border-radius:16px;padding:40px;box-shadow:var(--shadow-lg);text-align:center;}
+.results-card h2{font-size:1.8rem;font-weight:900;margin-bottom:8px;}
+.results-card .score-big{font-size:3rem;font-weight:900;margin:20px 0;}
+.results-card .score-big.pass{color:var(--green);}
+.results-card .score-big.fail{color:var(--red);}
+.result-bar{width:100%;max-width:400px;height:14px;background:#e2e8f0;border-radius:7px;margin:16px auto;overflow:hidden;}
+.result-bar-fill{height:100%;border-radius:7px;transition:width 1s;}
+.result-bar-fill.pass{background:var(--green);}
+.result-bar-fill.fail{background:var(--red);}
+.result-detail{display:inline-flex;gap:24px;margin:20px 0;font-size:0.9rem;font-weight:600;}
+.result-detail span{display:flex;align-items:center;gap:6px;}
+.btn-retry{margin-top:24px;padding:14px 36px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--blue-dark),var(--orange));color:white;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(234,88,12,0.3);transition:all 0.2s;}
+.btn-retry:hover{transform:translateY(-1px);}
+
+/* FOOTER */
+.footer{text-align:center;padding:24px;color:var(--gray);font-size:0.8rem;border-top:2px solid #e2e8f0;margin-top:40px;}
+
+/* PRINT — format fiches de révision */
+@media print {
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
+  body{background:#fff;font-size:9.5pt;line-height:1.45;color:#000;}
+  .tab-bar{display:none !important;}
+  #sec-quiz{display:none !important;}
+  #sec-revision{display:block !important;columns:2;column-gap:16px;}
+  .hero{padding:12px 16px;background:#1a2f5e !important;color:#fff !important;margin-bottom:8px;}
+  .hero h1{font-size:14pt;margin-bottom:2px;}
+  .hero p{font-size:8pt;color:#ccc !important;}
+  .content{padding:0 8px;}
+  .section-title{font-size:10pt;margin:10px 0 6px;padding:4px 8px;background:#f0f0f0 !important;border-left:4px solid #1a2f5e;break-after:avoid;}
+  .box{box-shadow:none;border:1px solid #ccc;margin-bottom:8px;padding:8px 10px;break-inside:avoid;border-radius:6px;font-size:9pt;}
+  .box .box-label{font-size:8pt;margin-bottom:3px;}
+  .box ul,.box ol{margin:4px 0 4px 14px;}
+  .box li{margin-bottom:2px;}
+  .box p{margin-bottom:4px;}
+  .grid2,.grid3{display:block;}
+  .grid2 > *,.grid3 > *{margin-bottom:6px;}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid;padding:8px 10px;font-size:9pt;}
+  table{font-size:8.5pt;margin-bottom:6px;break-inside:avoid;}
+  th{background:#e8e8e8 !important;padding:4px 6px;font-size:8pt;}
+  td{padding:4px 6px;border-bottom:1px solid #eee;}
+  .footer{display:none;}
+  @page{margin:10mm;size:A4;}
+}
+
+@media(max-width:768px){
+  .grid2,.grid3{grid-template-columns:1fr;}
+  .tab-bar{flex-wrap:wrap;}
+  .tab{padding:8px 16px;font-size:0.85rem;}
+  .content{padding:20px 16px 60px;}
+  .hero{padding:32px 20px;}
+  .hero h1{font-size:1.5rem;}
+  .question-card{padding:20px;}
+  .results-card{padding:24px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">Certassur PCP — Fiche de revision</div>
+  <h1>Examen 3.2 — Vie general partie 2</h1>
+  <p>Legislation anti-blanchiment, marche de l'assurance, regime de pension et regles de conduite</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('revision')">Fiche de revision</button>
+  <button class="tab" onclick="showTab('quiz')">Mini simulateur</button>
+</div>
+
+<div class="content">
+
+<!-- ================================================================ -->
+<!-- PART 1: FICHE DE REVISION                                        -->
+<!-- ================================================================ -->
+<div class="section active" id="sec-revision">
+
+<!-- ═══════ PENSIONS COMPLEMENTAIRES 2E PILIER ═══════ -->
+<div class="section-title">Pensions complementaires — 2e pilier <span class="stag">Comp. 1-6</span></div>
+
+<!-- COMP 1 -->
+<div class="comp-ref">Competence 1</div>
+<h4>Engagements de pension 2e pilier</h4>
+
+<div class="grid2">
+  <div class="box box-def">
+    <div class="box-label">Collectifs</div>
+    <ul>
+      <li><strong>Assurance-groupe</strong> : contrat collectif souscrit par l'employeur aupres d'un assureur</li>
+      <li><strong>Fonds de pension</strong> : entite juridique separee (OFP) qui gere les engagements</li>
+    </ul>
+  </div>
+  <div class="box box-def">
+    <div class="box-label">Individuels</div>
+    <ul>
+      <li>Engagement individuel de pension (EIP) : promesse de pension pour un dirigeant d'entreprise specifique</li>
+      <li>Organise via assurance vie ou fonds de pension</li>
+    </ul>
+  </div>
+</div>
+
+<h4>Types d'engagements</h4>
+<table>
+  <tr><th>Type</th><th>Principe</th><th>Risque</th></tr>
+  <tr>
+    <td><strong>Contribution definie</strong></td>
+    <td>% fixe du salaire verse comme prime ; le resultat depend du rendement des placements</td>
+    <td>Risque porte par l'<span class="tag-orange">affilie</span></td>
+  </tr>
+  <tr>
+    <td><strong>But a atteindre (prestations definies)</strong></td>
+    <td>L'employeur garantit un resultat final (capital ou rente)</td>
+    <td>Risque porte par l'<span class="tag-blue">employeur</span></td>
+  </tr>
+  <tr>
+    <td><strong>Cash balance</strong></td>
+    <td>Hybride : contributions definies + rendement minimum garanti par l'employeur</td>
+    <td>Risque <span class="tag-green">partage</span></td>
+  </tr>
+</table>
+
+<div class="box box-key">
+  <div class="box-label">A retenir</div>
+  Une <strong>selection medicale</strong> peut etre exigee pour les garanties deces et invalidite. Les organisateurs sont soit un fonds de pension (OFP), soit un assureur vie.
+</div>
+
+<!-- COMP 2 -->
+<div class="comp-ref">Competence 2</div>
+<h4>PLCI — Pension libre complementaire pour independants</h4>
+
+<table>
+  <tr><th>Critere</th><th>PLCI ordinaire</th><th>PLCI sociale</th></tr>
+  <tr>
+    <td>Plafond prime</td>
+    <td><strong>8,17%</strong> du revenu de reference</td>
+    <td><strong>9,40%</strong> du revenu de reference</td>
+  </tr>
+  <tr>
+    <td>Deductibilite</td>
+    <td>Charge professionnelle deductible</td>
+    <td>Charge professionnelle deductible</td>
+  </tr>
+  <tr>
+    <td>Selection medicale</td>
+    <td><span class="tag-green">Pas de selection</span></td>
+    <td><span class="tag-green">Pas de selection</span></td>
+  </tr>
+  <tr>
+    <td>Garanties complementaires</td>
+    <td>Non</td>
+    <td><span class="tag-orange">Oui</span> : incapacite, invalidite, deces</td>
+  </tr>
+  <tr>
+    <td>Volet solidarite</td>
+    <td>Non</td>
+    <td><strong>Minimum 10%</strong> des primes affecte a la solidarite</td>
+  </tr>
+</table>
+
+<!-- COMP 3 -->
+<div class="comp-ref">Competence 3</div>
+<h4>CPTI — Convention de pension pour travailleurs independants</h4>
+
+<div class="box box-orange">
+  <div class="box-label">Public cible</div>
+  Independants <strong>personnes physiques</strong> uniquement (pas via societe). Les dirigeants d'entreprise qui exercent via une societe n'y ont <strong>pas acces</strong>.
+</div>
+
+<ul>
+  <li><strong>Avantage fiscal</strong> : reduction d'impot (pas une deduction de charges professionnelles, contrairement a la PLCI)</li>
+  <li>Soumise a la <strong>regle des 80%</strong></li>
+  <li><strong>Selection medicale</strong> possible</li>
+</ul>
+
+<!-- COMP 4 -->
+<div class="comp-ref">Competence 4</div>
+<h4>Fiscalite du 2e pilier</h4>
+
+<div class="box box-warn">
+  <div class="box-label">Regle des 80%</div>
+  La pension legale + la pension complementaire ne peuvent <strong>pas depasser 80%</strong> du dernier salaire annuel brut normal. En cas de depassement, les primes excedentaires ne sont <strong>pas deductibles</strong> fiscalement.
+</div>
+
+<table>
+  <tr><th>Element</th><th>Detail</th></tr>
+  <tr><td>Taxe sur primes</td><td><strong>4,4%</strong> sur chaque prime versee</td></tr>
+  <tr><td>Avantage parafiscal</td><td>Cotisations patronales exonerees de cotisations sociales (dans les limites)</td></tr>
+  <tr><td>Regle des 100%</td><td>Pour les garanties <strong>incapacite de travail</strong> : capital assure peut aller jusqu'a 100% du salaire</td></tr>
+  <tr><td>Taxation du capital a 65 ans</td><td><strong>10%</strong> (taux avantageux si reste actif jusqu'a l'age legal de la retraite)</td></tr>
+  <tr><td>Cotisation INAMI</td><td><strong>3,55%</strong> sur le capital verse</td></tr>
+  <tr><td>Cotisation de solidarite</td><td><strong>0% a 2%</strong> selon le montant</td></tr>
+  <tr><td>Capital verse en rente</td><td>Imposee a l'<strong>IPP</strong> (impot des personnes physiques)</td></tr>
+  <tr><td>Droits de succession</td><td>Possibles sur les prestations deces d'assurances vie</td></tr>
+</table>
+
+<div class="box box-memo">
+  <div class="box-label">Astuce examen</div>
+  Retenez : <strong>4,4% - 80% - 10% - 3,55%</strong>. Ces 4 chiffres couvrent l'essentiel de la fiscalite 2e pilier.
+</div>
+
+<!-- COMP 5 -->
+<div class="comp-ref">Competence 5</div>
+<h4>Volet social LPC — Loi sur les pensions complementaires (travailleurs salaries)</h4>
+
+<ul>
+  <li><strong>Garantie de rendement minimum</strong> : basee sur le taux OLO (obligations lineaires), avec un minimum legal</li>
+  <li><strong>Categories</strong> : l'employeur definit des categories objectives d'affilies (ouvriers, employes, cadres...)</li>
+  <li><strong>Affiliation obligatoire</strong> : tout travailleur de la categorie visee doit etre affilie</li>
+  <li><strong>Droits acquis</strong> : apres <strong>1 an</strong> d'affiliation, les reserves sont acquises</li>
+  <li><strong>Sortie de service</strong> : l'affilie choisit entre le <strong>transfert</strong> vers un autre organisme ou le maintien en <strong>dormant</strong></li>
+  <li><strong>Communication obligatoire</strong> : fiche de pension annuelle envoyee a chaque affilie</li>
+</ul>
+
+<div class="box box-ok">
+  <div class="box-label">Cle</div>
+  Droits acquis apres <strong>1 an</strong> = l'affilie ne perd pas ses reserves accumulees meme s'il quitte l'entreprise.
+</div>
+
+<!-- COMP 6 -->
+<div class="comp-ref">Competence 6</div>
+<h4>Loi Pensions Complementaires Independants (LPCI/PLCI)</h4>
+
+<ul>
+  <li><strong>Garantie de capital</strong> : pas de rendement garanti (contrairement a la LPC salaries)</li>
+  <li>Prestations sous forme de <strong>rentes</strong> possibles</li>
+  <li><strong>Communication obligatoire</strong> : documents et rapports periodiques a fournir</li>
+</ul>
+
+<div class="box box-key">
+  <div class="box-label">Difference cle</div>
+  <strong>LPC (salaries)</strong> = garantie de rendement minimum (taux OLO). <strong>LPCI (independants)</strong> = garantie de capital uniquement, pas de rendement garanti.
+</div>
+
+<!-- ═══════ MARCHE ASSURANCE vs SERVICES FINANCIERS ═══════ -->
+<div class="section-title">Marche de l'assurance vs services financiers <span class="stag">Comp. 7-8</span></div>
+
+<!-- COMP 7 -->
+<div class="comp-ref">Competence 7</div>
+<h4>Comparaison assurance vie (B21/B26) vs produits bancaires</h4>
+
+<table>
+  <tr><th>Critere</th><th>Assurance B21/B26</th><th>Produit bancaire</th></tr>
+  <tr>
+    <td>Rendement</td>
+    <td><strong>Taux garanti</strong> + participation beneficiaire</td>
+    <td>Taux variable (peut fluctuer)</td>
+  </tr>
+  <tr>
+    <td>Garantie Etat</td>
+    <td>Protection jusqu'a <strong>100.000 EUR</strong></td>
+    <td>Protection jusqu'a <strong>100.000 EUR</strong></td>
+  </tr>
+  <tr>
+    <td>Planification successorale</td>
+    <td><span class="tag-green">Oui</span> : clause beneficiaire = outil puissant</td>
+    <td><span class="tag-red">Non</span></td>
+  </tr>
+  <tr>
+    <td>Duree</td>
+    <td>Souvent long terme</td>
+    <td>Variable (court a long terme)</td>
+  </tr>
+</table>
+
+<div class="box box-ok">
+  <div class="box-label">Avantage cle de l'assurance</div>
+  La <strong>clause beneficiaire</strong> permet une planification successorale precise : le capital est verse directement au beneficiaire designe, hors succession (sous conditions).
+</div>
+
+<!-- COMP 8 -->
+<div class="comp-ref">Competence 8</div>
+<h4>Planificateur financier independant (PFI)</h4>
+
+<div class="box box-warn">
+  <div class="box-label">Interdiction</div>
+  Un distributeur d'assurances ne peut <strong>jamais</strong> se faire passer pour un planificateur financier independant.
+</div>
+
+<ul>
+  <li><strong>Enregistre</strong> aupres de la FSMA</li>
+  <li>Ne percoit <strong>aucune commission</strong> de produits financiers</li>
+  <li>Ne peut <strong>pas vendre</strong> de produits : conseil pur uniquement</li>
+  <li>Remunere exclusivement par <strong>honoraires</strong> du client</li>
+</ul>
+
+<!-- ═══════ REGLES DE CONDUITE SPECIFIQUES VIE ═══════ -->
+<div class="section-title">Regles de conduite specifiques vie <span class="stag">Comp. 9-10</span></div>
+
+<!-- COMP 9 -->
+<div class="comp-ref">Competence 9</div>
+<h4>Devoir d'analyse et de diligence (2e et 3e pilier)</h4>
+
+<p>Le distributeur doit analyser la <strong>situation financiere complete</strong> du client :</p>
+<ul>
+  <li>Situation financiere et patrimoniale</li>
+  <li>Objectifs d'investissement (horizon, tolerance au risque)</li>
+  <li>Connaissances et experience en matiere de produits financiers</li>
+</ul>
+
+<h4>Inducements (avantages)</h4>
+<div class="box box-orange">
+  <div class="box-label">Regles inducements</div>
+  <ul>
+    <li>Doivent etre <strong>transparents</strong> : le client est informe de leur existence et de leur nature</li>
+    <li>Doivent <strong>ameliorer la qualite</strong> du service rendu au client</li>
+    <li><strong>Interdits</strong> si le distributeur facture des honoraires (fee-based)</li>
+  </ul>
+</div>
+
+<p><strong>Rapports adequats post-vente</strong> : le distributeur doit fournir un suivi regulier et adapte apres la souscription.</p>
+
+<!-- COMP 10 -->
+<div class="comp-ref">Competence 10</div>
+<h4>KID/DIC — Document d'informations cles (PRIIPS)</h4>
+
+<div class="box box-def">
+  <div class="box-label">Obligation</div>
+  Pour les produits <strong>PRIIPS</strong> (B23/B44 notamment) : le KID/DIC est <strong>obligatoire</strong>, fourni au client <strong>avant</strong> la conclusion du contrat (precontractuellement). Le distributeur doit l'<strong>expliquer et l'interpreter</strong>.
+</div>
+
+<!-- COMP 10/1 -->
+<div class="comp-ref">Competence 10/1</div>
+<h4>Preferences de durabilite — 3 categories</h4>
+
+<table>
+  <tr><th>Categorie</th><th>Description</th></tr>
+  <tr>
+    <td><strong>a) Taxonomie UE</strong></td>
+    <td>Activites economiques considerees comme ecologiquement durables selon le reglement Taxonomie</td>
+  </tr>
+  <tr>
+    <td><strong>b) Investissements durables SFDR</strong></td>
+    <td>Investissements contribuant a un objectif environnemental ou social (regl. SFDR)</td>
+  </tr>
+  <tr>
+    <td><strong>c) Incidences negatives (PAI)</strong></td>
+    <td>Principal Adverse Impacts : prise en compte des effets negatifs sur les facteurs de durabilite</td>
+  </tr>
+</table>
+
+<!-- COMP 10/2 -->
+<div class="comp-ref">Competence 10/2</div>
+<h4>Interrogation ESG lors du test d'adequation</h4>
+<p>Le distributeur doit <strong>interroger le client</strong> sur ses preferences en matiere de durabilite (ESG) dans le cadre du test d'adequation. Ces preferences sont integrees au profil d'investissement du client.</p>
+
+<!-- COMP 10/3 -->
+<div class="comp-ref">Competence 10/3</div>
+<h4>Absence de produit correspondant</h4>
+<div class="box box-key">
+  <div class="box-label">Important</div>
+  Si <strong>aucun produit</strong> disponible ne correspond aux preferences de durabilite du client, celui-ci a la possibilite de <strong>modifier ses preferences</strong>. Le distributeur documente ce choix.
+</div>
+
+<!-- ═══════ ANTI-BLANCHIMENT SPECIFIQUE VIE ═══════ -->
+<div class="section-title">Anti-blanchiment specifique vie <span class="stag">Comp. 11-14</span></div>
+
+<!-- COMP 11 -->
+<div class="comp-ref">Competence 11</div>
+<h4>Indicateurs de blanchiment en assurance vie</h4>
+
+<div class="grid2">
+  <div class="box box-warn">
+    <div class="box-label">Indicateurs suspects</div>
+    <ul>
+      <li>Rachat anticipe sans justification economique</li>
+      <li>Versements en especes eleves</li>
+      <li>Contrat disproportionne par rapport au profil du client</li>
+      <li>Changement frequent de beneficiaire</li>
+      <li>Client reticent a l'identification</li>
+      <li>Recours a des structures opaques</li>
+      <li>Lien avec un pays a risque (liste GAFI)</li>
+    </ul>
+  </div>
+  <div class="box box-orange">
+    <div class="box-label">3 facteurs de risque</div>
+    <ol>
+      <li><strong>Client</strong> : PEP, profil atypique, reticence</li>
+      <li><strong>Produit</strong> : contrat a prime unique elevee, rachat facile</li>
+      <li><strong>Geographique</strong> : pays GAFI, paradis fiscaux, zones de conflit</li>
+    </ol>
+  </div>
+</div>
+
+<!-- COMP 12 -->
+<div class="comp-ref">Competence 12</div>
+<h4>Vigilance constante</h4>
+
+<div class="box box-def">
+  <div class="box-label">Processus en 4 etapes — CONTINU</div>
+  <ol>
+    <li><strong>Identification et controle</strong> : verifier l'identite du client, du mandataire, du beneficiaire effectif</li>
+    <li><strong>Evaluation globale</strong> du risque : analyser le risque inherent au client et a la relation d'affaires</li>
+    <li><strong>Evaluation individuelle</strong> : adapter les mesures au profil specifique du client</li>
+    <li><strong>Mesures appropriees</strong> : appliquer une vigilance standard, simplifiee ou renforcee</li>
+  </ol>
+</div>
+
+<div class="box box-memo">
+  <div class="box-label">Astuce examen</div>
+  La vigilance est un processus <strong>CONTINU</strong>, pas un acte ponctuel. Elle s'applique tout au long de la relation d'affaires.
+</div>
+
+<!-- COMP 13 -->
+<div class="comp-ref">Competence 13</div>
+<h4>Rapport LBA annuel</h4>
+
+<ul>
+  <li>Obligatoire pour les <strong>courtiers vie non-exclusifs</strong></li>
+  <li>Frequence : <strong>1 fois par an</strong></li>
+  <li>Doit etre tenu <strong>a disposition de la FSMA</strong></li>
+  <li>Conservation pendant la <strong>duree legale</strong> (minimum 5 ans apres la fin de la relation)</li>
+</ul>
+
+<!-- COMP 14 -->
+<div class="comp-ref">Competence 14</div>
+<h4>Procedure en cas de soupcon</h4>
+
+<div class="box box-warn">
+  <div class="box-label">Etapes critiques</div>
+  <ol>
+    <li><strong>Ne pas alerter le client</strong> : le tipping-off (avertissement) est strictement <strong>interdit</strong></li>
+    <li><strong>Rassembler les informations</strong> pertinentes</li>
+    <li><strong>Declarer a la CTIF</strong> (Cellule de Traitement des Informations Financieres) — pas au Parquet directement</li>
+    <li><strong>Attendre les instructions</strong> de la CTIF avant toute action</li>
+  </ol>
+</div>
+
+<div class="box box-key">
+  <div class="box-label">Piege d'examen</div>
+  La declaration se fait a la <strong>CTIF</strong>, jamais directement au Parquet. C'est la CTIF qui decide de transmettre ou non au Parquet.
+</div>
+
+<!-- MEMO EXPRESS -->
+<div class="section-title">Memo express — Les chiffres a retenir <span class="stag">Recapitulatif</span></div>
+
+<table>
+  <tr><th>Element</th><th>Valeur</th></tr>
+  <tr><td>PLCI ordinaire</td><td><strong>8,17%</strong> du revenu de reference</td></tr>
+  <tr><td>PLCI sociale</td><td><strong>9,40%</strong> du revenu de reference</td></tr>
+  <tr><td>Solidarite PLCI sociale</td><td>Minimum <strong>10%</strong> des primes</td></tr>
+  <tr><td>Taxe sur primes 2e pilier</td><td><strong>4,4%</strong></td></tr>
+  <tr><td>Regle des 80%</td><td>Pension legale + comp. max <strong>80%</strong> dernier salaire brut</td></tr>
+  <tr><td>Regle des 100%</td><td>Garantie <strong>incapacite</strong> jusqu'a 100%</td></tr>
+  <tr><td>Taxation capital a 65 ans</td><td><strong>10%</strong></td></tr>
+  <tr><td>Cotisation INAMI</td><td><strong>3,55%</strong></td></tr>
+  <tr><td>Cotisation solidarite</td><td><strong>0% a 2%</strong></td></tr>
+  <tr><td>Garantie Etat (depot/assurance)</td><td><strong>100.000 EUR</strong></td></tr>
+  <tr><td>Droits acquis LPC salaries</td><td>Apres <strong>1 an</strong></td></tr>
+  <tr><td>Rapport LBA</td><td><strong>1x/an</strong>, a disposition FSMA</td></tr>
+  <tr><td>Declaration soupcon</td><td>A la <strong>CTIF</strong> (pas au Parquet)</td></tr>
+  <tr><td>Preferences durabilite</td><td><strong>3 categories</strong> : Taxonomie, SFDR, PAI</td></tr>
+</table>
+
+<div class="footer">Examen 3.2 — Vie general partie 2 | Fiche de revision Certassur | DAP Formation PCP</div>
+
+</div><!-- /sec-revision -->
+
+
+<!-- ================================================================ -->
+<!-- PART 2: MINI SIMULATEUR                                          -->
+<!-- ================================================================ -->
+<div class="section" id="sec-quiz">
+
+  <div id="quiz-start" class="quiz-intro">
+    <h2>Mini simulateur — Examen 3.2</h2>
+    <p>15 questions a choix multiples couvrant les 14 competences. Seuil de reussite : <strong>60% (9/15)</strong>.</p>
+    <button class="btn-start" onclick="startQuiz()">Commencer le simulateur</button>
+  </div>
+
+  <div id="quiz-area" style="display:none;">
+    <div class="quiz-progress">
+      <span class="qp-text" id="qp-text">Question 1/15</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:6.67%"></div></div>
+      <span class="qp-score" id="qp-score">Score : 0/0</span>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options-container"></div>
+      <div class="explanation" id="explanation"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn-nav btn-validate" id="btn-validate" onclick="validateAnswer()" disabled>Valider la reponse</button>
+      <button class="btn-nav btn-next" id="btn-next" onclick="nextQuestion()" style="display:none">Question suivante</button>
+    </div>
+  </div>
+
+  <div id="quiz-results" style="display:none;"></div>
+
+</div><!-- /sec-quiz -->
+
+</div><!-- /content -->
+
+<script>
+/* ═══════ TAB SWITCHING ═══════ */
+function showTab(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+/* ═══════ QUIZ DATA ═══════ */
+const questions = [
+  {
+    q: "Dans un engagement de pension de type 'contribution definie', qui supporte le risque du rendement ?",
+    options: ["L'employeur", "L'affilie (travailleur)", "L'assureur exclusivement", "Le fonds de pension exclusivement"],
+    correct: 1,
+    explanation: "En contribution definie, un pourcentage fixe du salaire est verse comme prime. Le resultat final depend du rendement obtenu, ce qui signifie que le risque est supporte par l'affilie."
+  },
+  {
+    q: "Quel est le plafond de prime pour une PLCI sociale ?",
+    options: ["8,17% du revenu de reference", "9,40% du revenu de reference", "10% du revenu de reference", "12% du revenu de reference"],
+    correct: 1,
+    explanation: "La PLCI sociale permet de verser jusqu'a 9,40% du revenu de reference (contre 8,17% pour la PLCI ordinaire). La difference est affectee a des garanties complementaires (incapacite, invalidite, deces) avec minimum 10% pour la solidarite."
+  },
+  {
+    q: "Quelle est la particularite du public cible de la CPTI ?",
+    options: ["Tous les independants, y compris via societe", "Uniquement les independants personnes physiques (pas via societe)", "Uniquement les dirigeants d'entreprise", "Uniquement les professions liberales"],
+    correct: 1,
+    explanation: "La CPTI est reservee aux independants personnes physiques. Les dirigeants d'entreprise qui exercent via une societe n'y ont pas acces. L'avantage fiscal est une reduction d'impot (pas une deduction)."
+  },
+  {
+    q: "Quel est le taux de la taxe prelevee sur les primes du 2e pilier ?",
+    options: ["3,55%", "4,4%", "10%", "8,17%"],
+    correct: 1,
+    explanation: "La taxe sur les primes du 2e pilier est de 4,4%. A ne pas confondre avec la cotisation INAMI de 3,55% ou la taxation du capital a 65 ans de 10%."
+  },
+  {
+    q: "Que signifie la regle des 80% en matiere de pensions complementaires ?",
+    options: ["80% des primes sont deductibles", "La pension complementaire doit representer au moins 80% de la pension legale", "La pension legale + complementaire ne peut depasser 80% du dernier salaire brut", "L'employeur doit financer 80% des primes"],
+    correct: 2,
+    explanation: "La regle des 80% stipule que l'ensemble des pensions (legale + complementaire) ne peut pas depasser 80% du dernier salaire annuel brut normal. En cas de depassement, les primes excedentaires ne sont pas deductibles fiscalement."
+  },
+  {
+    q: "Apres combien de temps d'affiliation les reserves sont-elles acquises en LPC (salaries) ?",
+    options: ["Immediatement", "Apres 1 an", "Apres 3 ans", "Apres 5 ans"],
+    correct: 1,
+    explanation: "En vertu de la LPC (travailleurs salaries), les droits sont acquis apres 1 an d'affiliation. L'affilie ne perd pas ses reserves accumulees meme s'il quitte l'entreprise."
+  },
+  {
+    q: "Quelle est la difference cle entre la LPC (salaries) et la LPCI (independants) en matiere de garantie ?",
+    options: ["La LPC offre une garantie de capital, la LPCI une garantie de rendement", "La LPC offre une garantie de rendement minimum (taux OLO), la LPCI uniquement une garantie de capital", "Les deux offrent la meme garantie de rendement", "Aucune des deux n'offre de garantie"],
+    correct: 1,
+    explanation: "La LPC (salaries) prevoit une garantie de rendement minimum basee sur le taux OLO. La LPCI (independants) offre uniquement une garantie de capital, sans rendement garanti."
+  },
+  {
+    q: "Quel est l'avantage distinctif de l'assurance vie B21/B26 par rapport a un produit bancaire ?",
+    options: ["Un rendement toujours superieur", "La garantie de l'Etat est de 200.000 EUR", "La possibilite de planification successorale via la clause beneficiaire", "L'absence totale de fiscalite"],
+    correct: 2,
+    explanation: "L'avantage cle de l'assurance vie est la clause beneficiaire, qui permet une planification successorale precise. Le capital est verse directement au beneficiaire designe. La garantie Etat est identique (100.000 EUR) pour les deux."
+  },
+  {
+    q: "Un distributeur d'assurances peut-il se presenter comme planificateur financier independant (PFI) ?",
+    options: ["Oui, s'il est enregistre a la FSMA", "Oui, s'il ne percoit pas de commissions sur les assurances vie", "Non, c'est strictement interdit", "Oui, s'il a suivi la formation Certassur"],
+    correct: 2,
+    explanation: "Un distributeur d'assurances ne peut jamais se faire passer pour un PFI. Le PFI est enregistre FSMA, ne percoit aucune commission et ne vend aucun produit. Il est remunere exclusivement par honoraires."
+  },
+  {
+    q: "Concernant les inducements (avantages), laquelle de ces affirmations est correcte ?",
+    options: ["Ils sont toujours interdits", "Ils sont autorises uniquement s'ils sont transparents et ameliorent la qualite du service", "Ils sont autorises meme en cas de facturation d'honoraires", "Ils ne doivent pas etre communiques au client"],
+    correct: 1,
+    explanation: "Les inducements doivent etre transparents et ameliorer la qualite du service rendu au client. Ils sont interdits lorsque le distributeur facture des honoraires (fee-based)."
+  },
+  {
+    q: "Quelles sont les 3 categories de preferences de durabilite selon la reglementation ?",
+    options: ["Environnement, Social, Gouvernance", "Taxonomie UE, Investissements durables SFDR, Incidences negatives PAI", "Climat, Biodiversite, Droits humains", "Carbone, Eau, Dechets"],
+    correct: 1,
+    explanation: "Les 3 categories sont : a) Taxonomie UE (activites ecologiquement durables), b) Investissements durables SFDR, c) Incidences negatives PAI (Principal Adverse Impacts). A ne pas confondre avec les piliers ESG (E, S, G)."
+  },
+  {
+    q: "Si aucun produit ne correspond aux preferences de durabilite du client, que se passe-t-il ?",
+    options: ["Le distributeur doit refuser de conclure le contrat", "Le client peut modifier ses preferences de durabilite", "Le distributeur choisit le produit le plus proche sans consulter le client", "La vente est automatiquement annulee"],
+    correct: 1,
+    explanation: "Si aucun produit disponible ne correspond aux preferences de durabilite, le client a la possibilite de modifier ses preferences. Le distributeur documente ce choix."
+  },
+  {
+    q: "Lequel de ces elements n'est PAS un indicateur de blanchiment en assurance vie ?",
+    options: ["Rachat anticipe sans justification", "Souscription d'un contrat avec un objectif de retraite clair", "Versements en especes eleves", "Changement frequent de beneficiaire"],
+    correct: 1,
+    explanation: "Un contrat souscrit avec un objectif de retraite clair est une operation normale. Les indicateurs suspects incluent : rachat anticipe injustifie, versements cash eleves, changement frequent de beneficiaire, reticence a l'identification, structures opaques, pays a risque GAFI."
+  },
+  {
+    q: "A qui doit-on declarer un soupcon de blanchiment ?",
+    options: ["Au Parquet", "A la police federale", "A la CTIF (Cellule de Traitement des Informations Financieres)", "A la FSMA directement"],
+    correct: 2,
+    explanation: "La declaration de soupcon se fait a la CTIF (pas au Parquet directement). C'est la CTIF qui decide de transmettre ou non au Parquet. Le tipping-off (alerter le client) est strictement interdit."
+  },
+  {
+    q: "Concernant le rapport LBA annuel, quelle affirmation est correcte ?",
+    options: ["Il est obligatoire pour tous les courtiers, y compris les exclusifs", "Il est obligatoire pour les courtiers vie non-exclusifs, 1 fois par an, a disposition de la FSMA", "Il doit etre envoye a la CTIF chaque trimestre", "Il n'est obligatoire que pour les compagnies d'assurance, pas les courtiers"],
+    correct: 1,
+    explanation: "Le rapport LBA annuel est obligatoire pour les courtiers vie non-exclusifs. Il doit etre etabli 1 fois par an et tenu a disposition de la FSMA. Il doit etre conserve pendant la duree legale."
+  }
+];
+
+/* ═══════ QUIZ ENGINE ═══════ */
+let currentQ = 0;
+let score = 0;
+let answered = 0;
+let selectedOption = -1;
+let isAnswered = false;
+
+function startQuiz() {
+  document.getElementById('quiz-start').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  currentQ = 0; score = 0; answered = 0;
+  shuffleArray(questions);
+  renderQuestion();
+}
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function renderQuestion() {
+  selectedOption = -1;
+  isAnswered = false;
+  const q = questions[currentQ];
+  document.getElementById('q-number').textContent = 'Question ' + (currentQ + 1) + ' / 15';
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('qp-text').textContent = 'Question ' + (currentQ + 1) + '/15';
+  document.getElementById('progress-fill').style.width = ((currentQ + 1) / 15 * 100) + '%';
+  document.getElementById('qp-score').textContent = 'Score : ' + score + '/' + answered;
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = '<div class="opt-letter">' + letters[i] + '</div><div class="opt-text">' + opt + '</div>';
+    div.onclick = () => selectOption(i);
+    container.appendChild(div);
+  });
+
+  document.getElementById('explanation').classList.remove('visible');
+  document.getElementById('explanation').textContent = '';
+  document.getElementById('btn-validate').disabled = true;
+  document.getElementById('btn-validate').style.display = 'inline-block';
+  document.getElementById('btn-next').style.display = 'none';
+}
+
+function selectOption(i) {
+  if (isAnswered) return;
+  selectedOption = i;
+  document.querySelectorAll('#options-container .option').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('btn-validate').disabled = false;
+}
+
+function validateAnswer() {
+  if (selectedOption === -1 || isAnswered) return;
+  isAnswered = true;
+  answered++;
+  const q = questions[currentQ];
+  const opts = document.querySelectorAll('#options-container .option');
+
+  opts.forEach((el, idx) => {
+    el.classList.remove('selected');
+    el.classList.add('disabled');
+    if (idx === q.correct) el.classList.add('correct');
+    if (idx === selectedOption && idx !== q.correct) el.classList.add('wrong');
+  });
+
+  if (selectedOption === q.correct) score++;
+
+  document.getElementById('qp-score').textContent = 'Score : ' + score + '/' + answered;
+  document.getElementById('explanation').textContent = q.explanation;
+  document.getElementById('explanation').classList.add('visible');
+  document.getElementById('btn-validate').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent = currentQ < 14 ? 'Question suivante' : 'Voir les resultats';
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= 15) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const pct = Math.round(score / 15 * 100);
+  const pass = score >= 9;
+  const cls = pass ? 'pass' : 'fail';
+  const icon = pass ? '&#10004;' : '&#10008;';
+  const msg = pass ? 'Felicitations, vous avez reussi !' : 'Vous n\'avez pas atteint le seuil de 60%.';
+
+  document.getElementById('quiz-results').style.display = 'block';
+  document.getElementById('quiz-results').innerHTML = `
+    <div class="results-card">
+      <h2>Resultats — Examen 3.2</h2>
+      <div class="score-big ${cls}">${score} / 15</div>
+      <div class="result-bar"><div class="result-bar-fill ${cls}" style="width:${pct}%"></div></div>
+      <p style="font-size:1.1rem;font-weight:700;color:${pass ? 'var(--green)' : 'var(--red)'}">${icon} ${pct}% — ${msg}</p>
+      <div class="result-detail">
+        <span><span class="tag-green">${score} correctes</span></span>
+        <span><span class="tag-red">${15 - score} incorrectes</span></span>
+        <span><span class="tag-orange">Seuil : 9/15 (60%)</span></span>
+      </div>
+      <button class="btn-retry" onclick="retryQuiz()">Recommencer</button>
+    </div>
+  `;
+}
+
+function retryQuiz() {
+  document.getElementById('quiz-results').style.display = 'none';
+  document.getElementById('quiz-start').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
